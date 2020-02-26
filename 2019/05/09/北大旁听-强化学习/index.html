@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.0.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.0.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.0.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.0.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.0.1" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.0.1',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="强化学习、马尔可夫、蒙特卡洛采样法、SARSA、Q-learning  博客推荐：强化学习总结 1. 强化学习基本概念概念：agent（智能体）、environment（环境，可观察，有状态）、reward（回报）、observation（观察）、state（环境观察结果）、action（决策，agent学习的东西，当环境会变化时，决策通常表现为概率模型）。   Policy是最终要求取的结果，">
+<meta name="keywords" content="深度学习,北大旁听">
+<meta property="og:type" content="article">
+<meta property="og:title" content="北大旁听 - 强化学习">
+<meta property="og:url" content="http://iblue.tech/2019/05/09/北大旁听-强化学习/index.html">
+<meta property="og:site_name" content="iBlue.tech">
+<meta property="og:description" content="强化学习、马尔可夫、蒙特卡洛采样法、SARSA、Q-learning  博客推荐：强化学习总结 1. 强化学习基本概念概念：agent（智能体）、environment（环境，可观察，有状态）、reward（回报）、observation（观察）、state（环境观察结果）、action（决策，agent学习的东西，当环境会变化时，决策通常表现为概率模型）。   Policy是最终要求取的结果，">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://cdn.iblue.tech/img/20190509/K42e0v9BN7n4.png?imageslim">
+<meta property="og:image" content="http://cdn.iblue.tech/img/20190509/n2uQqQyT7qvU.png?imageslim">
+<meta property="og:image" content="http://cdn.iblue.tech/img/20190509/KvK7UgC5GIGS.png?imageslim">
+<meta property="og:image" content="http://cdn.iblue.tech/img/20190509/vRCL4Xj5g8yz.png?imageslim">
+<meta property="og:image" content="http://cdn.iblue.tech/img/20190509/fIVibekCDIh0.png?imageslim">
+<meta property="og:image" content="http://cdn.iblue.tech/img/20190509/kSk4CRajoR1y.png?imageslim">
+<meta property="og:image" content="http://cdn.iblue.tech/img/20190509/DdDWdztvKnLA.png?imageslim">
+<meta property="og:image" content="http://cdn.iblue.tech/img/20190509/6f3ymTfNf9Cm.png?imageslim">
+<meta property="og:image" content="http://cdn.iblue.tech/img/20190509/jkqgBz2ms6jp.png?imageslim">
+<meta property="og:image" content="http://cdn.iblue.tech/img/20190509/3pczDa3mmzMf.png?imageslim">
+<meta property="og:image" content="http://cdn.iblue.tech/img/20190509/X3WkassbTH4T.png?imageslim">
+<meta property="og:image" content="http://cdn.iblue.tech/img/20190509/eRYXnqqMnBqu.png?imageslim">
+<meta property="og:image" content="http://cdn.iblue.tech/img/20190509/GhXaYxlWV0qz.png?imageslim">
+<meta property="og:image" content="http://cdn.iblue.tech/img/20190509/r31S4U3NtoBF.png?imageslim">
+<meta property="og:image" content="http://cdn.iblue.tech/img/20190509/HEsvIyMTXap0.png?imageslim">
+<meta property="og:image" content="http://cdn.iblue.tech/img/20190509/PptIzHjCYEHX.png?imageslim">
+<meta property="og:image" content="http://cdn.iblue.tech/img/20190509/onSMPH8TknlX.png?imageslim">
+<meta property="og:image" content="http://cdn.iblue.tech/img/20190509/mFJKerRNGko3.png?imageslim">
+<meta property="og:image" content="http://cdn.iblue.tech/img/20190509/zVuFJ8ywdv4n.png?imageslim">
+<meta property="og:image" content="http://cdn.iblue.tech/img/20190509/zLt7EhFEJIbL.png?imageslim">
+<meta property="og:image" content="http://cdn.iblue.tech/img/20190509/l7fHhWwgwdhb.png?imageslim">
+<meta property="og:image" content="http://cdn.iblue.tech/img/20190509/jaPYmGAbgCMa.png?imageslim">
+<meta property="og:image" content="http://cdn.iblue.tech/img/20190509/Ec31t3b8Ud8T.png?imageslim">
+<meta property="og:image" content="http://cdn.iblue.tech/img/20190509/nqYPxsW8EcSb.png?imageslim">
+<meta property="og:image" content="http://cdn.iblue.tech/img/20190509/fWFS4Ya4Aoop.png?imageslim">
+<meta property="og:updated_time" content="2020-02-26T04:01:31.238Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="北大旁听 - 强化学习">
+<meta name="twitter:description" content="强化学习、马尔可夫、蒙特卡洛采样法、SARSA、Q-learning  博客推荐：强化学习总结 1. 强化学习基本概念概念：agent（智能体）、environment（环境，可观察，有状态）、reward（回报）、observation（观察）、state（环境观察结果）、action（决策，agent学习的东西，当环境会变化时，决策通常表现为概率模型）。   Policy是最终要求取的结果，">
+<meta name="twitter:image" content="http://cdn.iblue.tech/img/20190509/K42e0v9BN7n4.png?imageslim">
+
+
+
+
+
+
+  <link rel="canonical" href="http://iblue.tech/2019/05/09/北大旁听-强化学习/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>北大旁听 - 强化学习 | iBlue.tech</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">iBlue.tech</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">Welcome to 2020.</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://iblue.tech/2019/05/09/北大旁听-强化学习/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Todd Gao">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iBlue.tech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">北大旁听 - 强化学习
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-05-09 15:20:35" itemprop="dateCreated datePublished" datetime="2019-05-09T15:20:35+08:00">2019-05-09</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-02-26 12:01:31" itemprop="dateModified" datetime="2020-02-26T12:01:31+08:00">2020-02-26</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>强化学习、马尔可夫、蒙特卡洛采样法、SARSA、Q-learning</p>
+</blockquote>
+<p>博客推荐：<a href="https://www.cnblogs.com/steven-yang/p/6649213.html" target="_blank" rel="noopener">强化学习总结</a></p>
+<h2 id="1-强化学习基本概念"><a href="#1-强化学习基本概念" class="headerlink" title="1. 强化学习基本概念"></a>1. 强化学习基本概念</h2><p>概念：agent（智能体）、environment（环境，可观察，有状态）、reward（回报）、observation（观察）、state（环境观察结果）、action（决策，agent学习的东西，当环境会变化时，决策通常表现为概率模型）。</p>
+<p><img src="http://cdn.iblue.tech/img/20190509/K42e0v9BN7n4.png?imageslim" alt="基本概念1"></p>
+<p><img src="http://cdn.iblue.tech/img/20190509/n2uQqQyT7qvU.png?imageslim" alt="基本概念2"></p>
+<p>Policy是最终要求取的结果，经常会被表示成<code>Π(a|s)</code>，要注意的是Reward表示为短期回报，Value表示为长期回报。</p>
+<p>强化学习可以看做是智能体与环境的交互的过程，可以看作是一个<strong>马尔可夫决策过程</strong>。</p>
+<a id="more"></a>
+<h3 id="1-1-马尔可夫"><a href="#1-1-马尔可夫" class="headerlink" title="1.1 马尔可夫"></a>1.1 马尔可夫</h3><p><img src="http://cdn.iblue.tech/img/20190509/KvK7UgC5GIGS.png?imageslim" alt="马尔可夫"></p>
+<p><img src="http://cdn.iblue.tech/img/20190509/vRCL4Xj5g8yz.png?imageslim" alt="马尔可夫轨迹"></p>
+<p><img src="http://cdn.iblue.tech/img/20190509/fIVibekCDIh0.png?imageslim" alt="马尔可夫理论"></p>
+<p>正因为这套理论，当Policy稳定时，强化学习得以训练。</p>
+<h3 id="1-2-回合（Episode）"><a href="#1-2-回合（Episode）" class="headerlink" title="1.2 回合（Episode）"></a>1.2 回合（Episode）</h3><p><img src="http://cdn.iblue.tech/img/20190509/kSk4CRajoR1y.png?imageslim" alt="回合"></p>
+<h3 id="1-3-目标"><a href="#1-3-目标" class="headerlink" title="1.3 目标"></a>1.3 目标</h3><p><img src="http://cdn.iblue.tech/img/20190509/DdDWdztvKnLA.png?imageslim" alt="目标"></p>
+<p>这里的<code>Π(θ)(a|s)</code>就是Policy，强化学习的最终目标。</p>
+<h3 id="1-4-基本途径"><a href="#1-4-基本途径" class="headerlink" title="1.4 基本途径"></a>1.4 基本途径</h3><ul>
+<li>Value based，关注点是找到最优奖励总和，这一类方法最多；</li>
+<li>Policy based，关注点是找到最优策略；</li>
+<li>Action based，关注点是每一步的最优行动。</li>
+</ul>
+<h2 id="2-基于值的强化学习方法"><a href="#2-基于值的强化学习方法" class="headerlink" title="2. 基于值的强化学习方法"></a>2. 基于值的强化学习方法</h2><h3 id="2-1-Value函数定义"><a href="#2-1-Value函数定义" class="headerlink" title="2.1 Value函数定义"></a>2.1 Value函数定义</h3><p>我们对策略的调整，总是基于以下两个回报的对比：</p>
+<ul>
+<li>当前状态下，智能体<strong>按照现有策略</strong>执行动作，所能获得的平均回报（期望）；</li>
+<li>当前状态下，智能体<strong>在选择某个动作a的前提</strong>下，所能获得的平均回报（期望）。</li>
+</ul>
+<p>举例：高考，一个是按已有的状态考北大，一个是说考清华就给1000w的前提下做决策。</p>
+<p><img src="http://cdn.iblue.tech/img/20190509/6f3ymTfNf9Cm.png?imageslim" alt="定义Value函数"></p>
+<p><img src="http://cdn.iblue.tech/img/20190509/jkqgBz2ms6jp.png?imageslim" alt="具体Value函数定义"></p>
+<h3 id="2-2-Bellman方程"><a href="#2-2-Bellman方程" class="headerlink" title="2.2 Bellman方程"></a>2.2 Bellman方程</h3><p><img src="http://cdn.iblue.tech/img/20190509/3pczDa3mmzMf.png?imageslim" alt="bellman方程"></p>
+<p>这个式子和反向传播的链式法则一样，知道后面的reward和state就可以往前去算了（动态规划）。</p>
+<p><img src="http://cdn.iblue.tech/img/20190509/X3WkassbTH4T.png?imageslim" alt="bellman方程2"></p>
+<h3 id="2-3-计算值函数的方法"><a href="#2-3-计算值函数的方法" class="headerlink" title="2.3 计算值函数的方法"></a>2.3 计算值函数的方法</h3><p><img src="http://cdn.iblue.tech/img/20190509/eRYXnqqMnBqu.png?imageslim" alt="Value计算方法"></p>
+<p>MDP已知：Policy完全可见，但大多数情况下MDP是未知的。在时许差分学习方法中常用的就是SARSA、Q-learning。</p>
+<h4 id="2-3-1-策略迭代方法（最笨的方法，阐述了强化学习最基本的逻辑）"><a href="#2-3-1-策略迭代方法（最笨的方法，阐述了强化学习最基本的逻辑）" class="headerlink" title="2.3.1 策略迭代方法（最笨的方法，阐述了强化学习最基本的逻辑）"></a>2.3.1 策略迭代方法（最笨的方法，阐述了强化学习最基本的逻辑）</h4><p><img src="http://cdn.iblue.tech/img/20190509/GhXaYxlWV0qz.png?imageslim" alt="策略迭代方法"></p>
+<h4 id="2-3-2-值迭代算法"><a href="#2-3-2-值迭代算法" class="headerlink" title="2.3.2 值迭代算法"></a>2.3.2 值迭代算法</h4><p><img src="http://cdn.iblue.tech/img/20190509/r31S4U3NtoBF.png?imageslim" alt="值迭代算法"></p>
+<p>简单，容易收敛，可能没有策略迭代法准确，是典型的动态规划算法。</p>
+<p>以上两种方法都是基于模型的强化学习方法，实际上就是动态规划算法，但由于</p>
+<ul>
+<li>要求模型已知，即要给出马尔可夫决策过程的状态转移概率p和奖励函数r，这个要求很难满足；</li>
+<li>效率问题，很多问题的状态数量和动作数量非常多。</li>
+</ul>
+<p>导致这种方法不实用，如果模型未知，Q函数可以通过采样来进行计算，这就是蒙特卡洛方法。</p>
+<h4 id="2-3-4-蒙特卡洛采样方法"><a href="#2-3-4-蒙特卡洛采样方法" class="headerlink" title="2.3.4 蒙特卡洛采样方法"></a>2.3.4 蒙特卡洛采样方法</h4><p><img src="http://cdn.iblue.tech/img/20190509/HEsvIyMTXap0.png?imageslim" alt="蒙特卡洛方法"></p>
+<p><img src="http://cdn.iblue.tech/img/20190509/PptIzHjCYEHX.png?imageslim" alt="greedy-method"></p>
+<p>首先构造一个概率，然后按概率随机选择A中的动作，再使用蒙特卡洛采样法。</p>
+<p>但仍然存在问题：需要拿到完整轨迹，才能评估并更新模型，效率低。为了不拿到完整轨迹，就使用到了时序差分学习方法。</p>
+<p><img src="http://cdn.iblue.tech/img/20190509/onSMPH8TknlX.png?imageslim" alt="蒙特卡洛问题解决方法"></p>
+<p>对于最后一个式子的解释：是办法二和办法一公式的叠加，就是对Q-hat（加hat是因为是估算的）的更新过程，括号内的代表真实回报和期望回报的差距，真实回报的计算方法就是当前回报加上之前用计算过的回报来近似的回报。</p>
+<h4 id="2-3-5-时序查分学习方法-SARSA算法"><a href="#2-3-5-时序查分学习方法-SARSA算法" class="headerlink" title="2.3.5 时序查分学习方法 - SARSA算法"></a>2.3.5 时序查分学习方法 - SARSA算法</h4><p><img src="http://cdn.iblue.tech/img/20190509/mFJKerRNGko3.png?imageslim" alt="sarsa算法"></p>
+<p>中途选择动作e-greedy是因为想跳转到所有状态上。</p>
+<p>只要Q(s, a)收敛了，Policy就稳定了。</p>
+<p>这实际上是一个很保守的算法，每个episode都会看一下下一步动作并更新参数，所以遇到比较危险的aciton时，会绕开不敢走。</p>
+<h4 id="2-3-6-Q-Learning"><a href="#2-3-6-Q-Learning" class="headerlink" title="2.3.6 Q-Learning"></a>2.3.6 Q-Learning</h4><p><img src="http://cdn.iblue.tech/img/20190509/zVuFJ8ywdv4n.png?imageslim" alt="Q-Learning"></p>
+<p>比SARSA算法更“虎”，直接选择真实回报最大的action来更新Q，学的快。</p>
+<blockquote>
+<p>所以应该虎了吧唧的先把事情做完，再去修改……（雾……</p>
+</blockquote>
+<h4 id="2-3-7-Q-Learning示例"><a href="#2-3-7-Q-Learning示例" class="headerlink" title="2.3.7 Q-Learning示例"></a>2.3.7 Q-Learning示例</h4><p>如何定义一个环境：</p>
+<ul>
+<li>一定要给出所有状态；</li>
+<li>一定要确定reward。</li>
+</ul>
+<p><img src="http://cdn.iblue.tech/img/20190509/zLt7EhFEJIbL.png?imageslim" alt="示例"></p>
+<p>开始执行Q-Learning算法，目的是要让Q收敛（无论怎么运行Q不再变化）：</p>
+<ul>
+<li>从任意一个状态S开始，尝试做不同的动作。比如说从房间1开始；</li>
+<li>从R中看出1能做动作3、5，但在Q中3和5的概率都是0，所以就随机选择；</li>
+<li>假设执行动作a，随机选择了5；Q(1, 5) = R(1, 5) + α(max{Q(5)[0, 0, 0]}) - 0 = 100(假设α=0.8)；</li>
+<li>假设初始状态为3，则可能走1、2、4，假设随机跳转到1；</li>
+<li>则Q(3, 1) = R(3, 1) + α(max{Q(1)[0, 100]}) - 0 = 80；</li>
+</ul>
+<p>经过很多轮后，矩阵Q收敛：</p>
+<p><img src="http://cdn.iblue.tech/img/20190509/l7fHhWwgwdhb.png?imageslim" alt="示例2"></p>
+<p>则可以确定Policy，处于0的时候选4、1的时候选5、2的时候选3、3的时候选1或4、4的时候选5、5的时候选5。</p>
+<h4 id="2-3-8-Q-Learning的问题"><a href="#2-3-8-Q-Learning的问题" class="headerlink" title="2.3.8 Q-Learning的问题"></a>2.3.8 Q-Learning的问题</h4><p><img src="http://cdn.iblue.tech/img/20190509/jaPYmGAbgCMa.png?imageslim" alt="Q-Learning的问题"></p>
+<p>所以这就是Deep Q-Learning登场的时候了，用来模拟Q（状态转换矩阵）。给一个S，一个A就可以输出Q。</p>
+<h4 id="2-3-9-Deep-Q-Learning"><a href="#2-3-9-Deep-Q-Learning" class="headerlink" title="2.3.9 Deep Q-Learning"></a>2.3.9 Deep Q-Learning</h4><p><img src="http://cdn.iblue.tech/img/20190509/Ec31t3b8Ud8T.png?imageslim" alt="Deep Q-Learning"></p>
+<p>目标：用一个网络实现Q函数。</p>
+<p>两个问题：</p>
+<ul>
+<li>真实值和期望值同的一个网络计算，使得网络很难收敛；</li>
+<li>样本之间有很强的相关性，模型容易陷入局部最优(local optima)。</li>
+</ul>
+<p>解决办法：</p>
+<ul>
+<li>搞两个一样的网络，在一个时间段内固定目标网络中的参数，来稳定学习目标（Freezing Target，常用，就像共振一样）；</li>
+<li>搞一个经验池，由agent最近的经历组成的数据集，训练时，随机提取历史样本代替当前样本用来训练（Experience Replay）；</li>
+</ul>
+<p>这是标准的训练方法。</p>
+<p><img src="http://cdn.iblue.tech/img/20190509/nqYPxsW8EcSb.png?imageslim" alt="Deep Q-Learning训练方法"></p>
+<h3 id="2-4-总结"><a href="#2-4-总结" class="headerlink" title="2.4 总结"></a>2.4 总结</h3><p><img src="http://cdn.iblue.tech/img/20190509/fWFS4Ya4Aoop.png?imageslim" alt="基于值的强化学习方法总结"></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/深度学习/" rel="tag"># 深度学习</a>
+          
+            <a href="/tags/北大旁听/" rel="tag"># 北大旁听</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/08/LeetCode-0279-Perfect-Squares-完全平方数/" rel="next" title="LeetCode 0279. Perfect Squares 完全平方数">
+                <i class="fa fa-chevron-left"></i> LeetCode 0279. Perfect Squares 完全平方数
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/05/11/论文笔记-FCN-用于图像分割的全卷积网络/" rel="prev" title="论文笔记 - FCN 用于图像分割的全卷积网络">
+                论文笔记 - FCN 用于图像分割的全卷积网络 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Todd Gao</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">38</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">16</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/bingmang" title="GitHub &rarr; https://github.com/bingmang" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:todd.g@qq.com" title="E-Mail &rarr; mailto:todd.g@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-强化学习基本概念"><span class="nav-number">1.</span> <span class="nav-text">1. 强化学习基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-马尔可夫"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 马尔可夫</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-回合（Episode）"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 回合（Episode）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-目标"><span class="nav-number">1.3.</span> <span class="nav-text">1.3 目标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-基本途径"><span class="nav-number">1.4.</span> <span class="nav-text">1.4 基本途径</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-基于值的强化学习方法"><span class="nav-number">2.</span> <span class="nav-text">2. 基于值的强化学习方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-Value函数定义"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 Value函数定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-Bellman方程"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 Bellman方程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-计算值函数的方法"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 计算值函数的方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-1-策略迭代方法（最笨的方法，阐述了强化学习最基本的逻辑）"><span class="nav-number">2.3.1.</span> <span class="nav-text">2.3.1 策略迭代方法（最笨的方法，阐述了强化学习最基本的逻辑）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-2-值迭代算法"><span class="nav-number">2.3.2.</span> <span class="nav-text">2.3.2 值迭代算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-4-蒙特卡洛采样方法"><span class="nav-number">2.3.3.</span> <span class="nav-text">2.3.4 蒙特卡洛采样方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-5-时序查分学习方法-SARSA算法"><span class="nav-number">2.3.4.</span> <span class="nav-text">2.3.5 时序查分学习方法 - SARSA算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-6-Q-Learning"><span class="nav-number">2.3.5.</span> <span class="nav-text">2.3.6 Q-Learning</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-7-Q-Learning示例"><span class="nav-number">2.3.6.</span> <span class="nav-text">2.3.7 Q-Learning示例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-8-Q-Learning的问题"><span class="nav-number">2.3.7.</span> <span class="nav-text">2.3.8 Q-Learning的问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-9-Deep-Q-Learning"><span class="nav-number">2.3.8.</span> <span class="nav-text">2.3.9 Deep Q-Learning</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-总结"><span class="nav-number">2.4.</span> <span class="nav-text">2.4 总结</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">  <a href="http://www.beian.miit.gov.cn" rel="noopener" target="_blank">京ICP备17044274号-2 </a>&copy; 2018 – <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Todd Gao</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.0.1</div>
+
+
+
+
+        
+
+
+
+
+  <script>
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//tajs.qq.com/stats?sId=66179477";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=7.0.1"></script>
+
+  <script src="/js/src/motion.js?v=7.0.1"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/schemes/muse.js?v=7.0.1"></script>
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=7.0.1"></script>
+<script src="/js/src/post-details.js?v=7.0.1"></script>
+
+
+
+  
+
+
+  <script src="/js/src/next-boot.js?v=7.0.1"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
