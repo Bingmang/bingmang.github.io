@@ -108,7 +108,7 @@
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://cdn.iblue.tech/img/20200602/gDJChA.jpg">
 <meta property="og:image" content="http://cdn.iblue.tech/img/20200602/Ut7hSH.jpg">
-<meta property="og:updated_time" content="2020-06-02T13:55:47.742Z">
+<meta property="og:updated_time" content="2020-06-02T14:15:45.051Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="PyTorch Parallel Training（单机多卡）">
 <meta name="twitter:description" content="1 为什么不用nn.DataParallel ?1.1 最简单的并行方式我们在训练时最常用的并行方式就是 nn.DataParallel 了， 可以帮助我们（使用单进程控）将模型和数据加载到多个 GPU 中，控制数据在 GPU 之间的流动，协同不同 GPU 上的模型进行并行训练。 只需一行代码，就可以使用多卡进行训练，其中 device_ids 用于指定使用的GPU，output_device 用">
@@ -404,7 +404,7 @@
                 
               
 
-              <time title="创建时间：2020-06-02 21:54:32 / 修改时间：21:55:47" itemprop="dateCreated datePublished" datetime="2020-06-02T21:54:32+08:00">2020-06-02</time>
+              <time title="创建时间：2020-06-02 21:54:32 / 修改时间：22:15:45" itemprop="dateCreated datePublished" datetime="2020-06-02T21:54:32+08:00">2020-06-02</time>
             
 
             
@@ -494,7 +494,14 @@
 </ul>
 <p><img src="http://cdn.iblue.tech/img/20200602/Ut7hSH.jpg" alt="experimental"></p>
 <h2 id="3-2-使用方式"><a href="#3-2-使用方式" class="headerlink" title="3.2 使用方式"></a>3.2 使用方式</h2><h3 id="3-2-1-混合精度"><a href="#3-2-1-混合精度" class="headerlink" title="3.2.1 混合精度"></a>3.2.1 混合精度</h3><p>在混合精度训练上，Apex 的封装十分优雅。直接使用 <code>amp.initialize</code> 包装模型和优化器，apex 就会自动帮助我们管理模型参数和优化器的精度了，根据精度需求不同可以传入其他配置参数。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> apex <span class="keyword">import</span> amp</span><br><span class="line"></span><br><span class="line">model, optimizer = amp.initialize(model, optimizer, opt_level=<span class="string">'O1'</span>)</span><br><span class="line"></span><br><span class="line">其中 opt_level 为精度的优化设置，O0（第一个字母是大写字母O）</span><br><span class="line">O0：纯FP32训练，可以作为accuracy的baseline；O1：混合精度训练（推荐使用），根据黑白名单自动决定使用FP16（GEMM, 卷积）还是FP32（Softmax）进行计算。O2：“几乎FP16”混合精度训练，不存在黑白名单，除了Batch norm，几乎都是用FP16计算。O3：纯FP16训练，很不稳定，但是可以作为speed的baseline；</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> apex <span class="keyword">import</span> amp</span><br><span class="line"></span><br><span class="line">model, optimizer = amp.initialize(model, optimizer, opt_level=<span class="string">'O1'</span>)</span><br></pre></td></tr></table></figure>
+<p>其中 opt_level 为精度的优化设置，O0（第一个字母是大写字母O）:</p>
+<ul>
+<li>O0：纯FP32训练，可以作为accuracy的baseline；</li>
+<li>O1：混合精度训练（推荐使用），根据黑白名单自动决定使用FP16（GEMM, 卷积）还是FP32（Softmax）进行计算。</li>
+<li>O2：“几乎FP16”混合精度训练，不存在黑白名单，除了Batch norm，几乎都是用FP16计算。</li>
+<li>O3：纯FP16训练，很不稳定，但是可以作为speed的baseline；</li>
+</ul>
 <h3 id="3-2-2-并行训练"><a href="#3-2-2-并行训练" class="headerlink" title="3.2.2 并行训练"></a>3.2.2 并行训练</h3><p>Apex也实现了并行训练模型的转换方式，改动并不大，主要是优化了NCCL的通信，因此代码和 torch.distributed 保持一致，换一下调用的API即可：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> apex <span class="keyword">import</span> amp</span><br><span class="line"><span class="keyword">from</span> apex.parallel <span class="keyword">import</span> DistributedDataParallel</span><br><span class="line"></span><br><span class="line">model, optimizer = amp.initialize(model, optimizer, opt_level=<span class="string">'O1'</span>)</span><br><span class="line">model = DistributedDataParallel(model, delay_allreduce=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 反向传播时需要调用 amp.scale_loss，用于根据loss值自动对精度进行缩放</span></span><br><span class="line"><span class="keyword">with</span> amp.scale_loss(loss, optimizer) <span class="keyword">as</span> scaled_loss:</span><br><span class="line">    scaled_loss.backward()</span><br></pre></td></tr></table></figure>
 <h3 id="3-2-3-同步BN"><a href="#3-2-3-同步BN" class="headerlink" title="3.2.3 同步BN"></a>3.2.3 同步BN</h3><p>Apex为我们实现了同步BN，用于解决单GPU的minibatch太小导致BN在训练时不收敛的问题。</p>
