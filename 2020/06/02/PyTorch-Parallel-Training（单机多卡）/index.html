@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.0.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.0.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.0.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.0.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.0.1" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.0.1',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="1 为什么不用nn.DataParallel ?1.1 最简单的并行方式我们在训练时最常用的并行方式就是 nn.DataParallel 了， 可以帮助我们（使用单进程控）将模型和数据加载到多个 GPU 中，控制数据在 GPU 之间的流动，协同不同 GPU 上的模型进行并行训练。 只需一行代码，就可以使用多卡进行训练，其中 device_ids 用于指定使用的GPU，output_device 用">
+<meta name="keywords" content="深度学习,pytorch">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PyTorch Parallel Training（单机多卡）">
+<meta property="og:url" content="http://iblue.tech/2020/06/02/PyTorch-Parallel-Training（单机多卡）/index.html">
+<meta property="og:site_name" content="iBlue.tech">
+<meta property="og:description" content="1 为什么不用nn.DataParallel ?1.1 最简单的并行方式我们在训练时最常用的并行方式就是 nn.DataParallel 了， 可以帮助我们（使用单进程控）将模型和数据加载到多个 GPU 中，控制数据在 GPU 之间的流动，协同不同 GPU 上的模型进行并行训练。 只需一行代码，就可以使用多卡进行训练，其中 device_ids 用于指定使用的GPU，output_device 用">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://cdn.iblue.tech/img/20200602/gDJChA.jpg">
+<meta property="og:image" content="http://cdn.iblue.tech/img/20200602/Ut7hSH.jpg">
+<meta property="og:updated_time" content="2020-06-02T13:55:47.742Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PyTorch Parallel Training（单机多卡）">
+<meta name="twitter:description" content="1 为什么不用nn.DataParallel ?1.1 最简单的并行方式我们在训练时最常用的并行方式就是 nn.DataParallel 了， 可以帮助我们（使用单进程控）将模型和数据加载到多个 GPU 中，控制数据在 GPU 之间的流动，协同不同 GPU 上的模型进行并行训练。 只需一行代码，就可以使用多卡进行训练，其中 device_ids 用于指定使用的GPU，output_device 用">
+<meta name="twitter:image" content="http://cdn.iblue.tech/img/20200602/gDJChA.jpg">
+
+
+
+
+
+
+  <link rel="canonical" href="http://iblue.tech/2020/06/02/PyTorch-Parallel-Training（单机多卡）/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>PyTorch Parallel Training（单机多卡） | iBlue.tech</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">iBlue.tech</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">Welcome to 2020.</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://iblue.tech/2020/06/02/PyTorch-Parallel-Training（单机多卡）/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Todd Gao">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iBlue.tech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">PyTorch Parallel Training（单机多卡）
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-06-02 21:54:32 / 修改时间：21:55:47" itemprop="dateCreated datePublished" datetime="2020-06-02T21:54:32+08:00">2020-06-02</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="1-为什么不用nn-DataParallel"><a href="#1-为什么不用nn-DataParallel" class="headerlink" title="1 为什么不用nn.DataParallel ?"></a>1 为什么不用nn.DataParallel ?</h1><h2 id="1-1-最简单的并行方式"><a href="#1-1-最简单的并行方式" class="headerlink" title="1.1 最简单的并行方式"></a>1.1 最简单的并行方式</h2><p>我们在训练时最常用的并行方式就是 <code>nn.DataParallel</code> 了， 可以帮助我们（使用单进程控）将模型和数据加载到多个 GPU 中，控制数据在 GPU 之间的流动，协同不同 GPU 上的模型进行并行训练。</p>
+<p>只需一行代码，就可以使用多卡进行训练，其中 <code>device_ids</code> 用于指定使用的GPU，<code>output_device</code> 用于指定汇总梯度的GPU是哪个：</p>
+<p><code>model = nn.DataParallel(model.cuda(), device_ids=gpus, output_device=gpus[0])</code></p>
+<p>训练模板：</p>
+<a id="more"></a>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># main.py</span></span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.distributed <span class="keyword">as</span> dist</span><br><span class="line"></span><br><span class="line">gpus = [<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]</span><br><span class="line">torch.cuda.set_device(<span class="string">'cuda:&#123;&#125;'</span>.format(gpus[<span class="number">0</span>]))</span><br><span class="line"></span><br><span class="line">train_dataset = ...</span><br><span class="line"></span><br><span class="line">train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=...)</span><br><span class="line"></span><br><span class="line">model = ...</span><br><span class="line">model = nn.DataParallel(model.to(device), device_ids=gpus, output_device=gpus[<span class="number">0</span>])</span><br><span class="line"></span><br><span class="line">optimizer = optim.SGD(model.parameters())</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> epoch <span class="keyword">in</span> range(<span class="number">100</span>):</span><br><span class="line">   <span class="keyword">for</span> batch_idx, (data, target) <span class="keyword">in</span> enumerate(train_loader):</span><br><span class="line">      images = images.cuda(non_blocking=<span class="literal">True</span>)</span><br><span class="line">      target = target.cuda(non_blocking=<span class="literal">True</span>)</span><br><span class="line">      ...</span><br><span class="line">      output = model(images)</span><br><span class="line">      loss = criterion(output, target)</span><br><span class="line">      ...</span><br><span class="line">      optimizer.zero_grad()</span><br><span class="line">      loss.backward()</span><br><span class="line">      optimizer.step()</span><br></pre></td></tr></table></figure>
+<h2 id="1-2-nn-DataParallel-的缺点"><a href="#1-2-nn-DataParallel-的缺点" class="headerlink" title="1.2 nn.DataParallel 的缺点"></a>1.2 nn.DataParallel 的缺点</h2><p>在每个训练批次（batch）中，因为模型的权重都是在 一个进程上先算出来 然后再把他们分发到每个GPU上，所以网络通信就成为了一个瓶颈，而GPU使用率也通常很低。</p>
+<h1 id="2-多进程的-torch-distributed"><a href="#2-多进程的-torch-distributed" class="headerlink" title="2 多进程的 torch.distributed"></a>2 多进程的 torch.distributed</h1><h2 id="2-1-介绍"><a href="#2-1-介绍" class="headerlink" title="2.1 介绍"></a>2.1 介绍</h2><p>在 1.0 之后，官方终于对分布式的常用方法进行了封装，支持 all-reduce，broadcast，send 和 receive 等等。通过 MPI 实现 CPU 通信，通过 NCCL 实现 GPU 通信。官方也曾经提到用 <code>DistributedDataParallel</code> 解决 DataParallel 速度慢，GPU 负载不均衡的问题，目前已经很成熟了。</p>
+<p><img src="http://cdn.iblue.tech/img/20200602/gDJChA.jpg" alt="distributed gpu"></p>
+<p>与 DataParallel 的单进程控制多 GPU 不同，在 distributed 的帮助下，我们只需要编写一份代码，torch 就会自动将其分配给n个进程，分别在n个 GPU 上运行。</p>
+<p>和单进程训练不同的是，多进程训练需要注意以下事项：</p>
+<ul>
+<li>在喂数据的时候，一个batch被分到了好几个进程，每个进程在取数据的时候要确保拿到的是不同的数据（<code>DistributedSampler</code>）；</li>
+<li>要告诉每个进程自己是谁，使用哪块GPU（<code>args.local_rank</code>）；</li>
+<li>在做BatchNormalization的时候要注意同步数据。</li>
+</ul>
+<h2 id="2-2-使用方式"><a href="#2-2-使用方式" class="headerlink" title="2.2 使用方式"></a>2.2 使用方式</h2><h3 id="2-2-1-启动方式的改变"><a href="#2-2-1-启动方式的改变" class="headerlink" title="2.2.1 启动方式的改变"></a>2.2.1 启动方式的改变</h3><p>在多进程的启动方面，我们不用自己手写 multiprocess 进行一系列复杂的CPU、GPU分配任务，PyTorch为我们提供了一个很方便的启动器 <code>torch.distributed.lunch</code> 用于启动文件，所以我们运行训练代码的方式就变成了这样：</p>
+<p><code>CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --nproc_per_node=4 main.py</code></p>
+<p>其中的 <code>--nproc_per_node</code> 参数用于指定为当前主机创建的进程数，由于我们是单机多卡，所以这里node数量为1，所以我们这里设置为所使用的GPU数量即可。</p>
+<h3 id="2-2-2-初始化"><a href="#2-2-2-初始化" class="headerlink" title="2.2.2 初始化"></a>2.2.2 初始化</h3><p>在启动器为我们启动python脚本后，会通过参数 <code>local_rank</code> 来告诉我们当前进程使用的是哪个GPU，用于我们在每个进程中指定不同的device：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">parse</span><span class="params">()</span>:</span></span><br><span class="line">    parser = argparse.ArgumentParser()</span><br><span class="line">    parser.add_argument(<span class="string">'--local_rank'</span>, type=int, default=<span class="number">0</span>)</span><br><span class="line">    args = parser.parse_args()</span><br><span class="line">    <span class="keyword">return</span> args</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    args = parse()</span><br><span class="line">    torch.cuda.set_device(args.local_rank)</span><br><span class="line">    torch.distributed.init_process_group(</span><br><span class="line">        <span class="string">'nccl'</span>,</span><br><span class="line">        init_method=<span class="string">'env://'</span></span><br><span class="line">    )</span><br><span class="line">    device = torch.device(<span class="string">f'cuda:<span class="subst">&#123;args.local_rank&#125;</span>'</span>)</span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
+<p>其中 torch.distributed.init_process_group 用于初始化GPU通信方式（NCCL）和参数的获取方式（env代表通过环境变量）</p>
+<h3 id="2-2-3-DataLoader"><a href="#2-2-3-DataLoader" class="headerlink" title="2.2.3 DataLoader"></a>2.2.3 DataLoader</h3><p>在读取数据的时候，我们要保证一个batch里的数据被均摊到每个进程上，每个进程都能获取到不同的数据，但如果我们手动去告诉每个进程拿哪些数据的话太麻烦了，PyTorch也为我们封装好了这一方法。</p>
+<p>所以我们在初始化 <code>data loader</code> 的时候需要使用到 <code>torch.utils.data.distributed.DistributedSampler</code> 这个特性：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">train_sampler = torch.utils.data.distributed.DistributedSampler(train_dataset)</span><br><span class="line"></span><br><span class="line">train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=..., sampler=train_sampler)</span><br></pre></td></tr></table></figure>
+<p>这样就能给每个进程一个不同的 sampler，告诉每个进程自己分别取哪些数据。</p>
+<h3 id="2-2-4-模型的初始化"><a href="#2-2-4-模型的初始化" class="headerlink" title="2.2.4 模型的初始化"></a>2.2.4 模型的初始化</h3><p>和 <code>nn.DataParallel</code> 的方式一样，我们对于模型的初始化也是简单的一句话就行了</p>
+<p><code>model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.local_rank])</code></p>
+<h3 id="2-2-5-同步BN"><a href="#2-2-5-同步BN" class="headerlink" title="2.2.5 同步BN"></a>2.2.5 同步BN</h3><p><a href="https://zhuanlan.zhihu.com/p/40496177" target="_blank" rel="noopener">为什么要同步BN？</a></p>
+<p>现有的标准 Batch Normalization 因为使用数据并行（Data Parallel），是单卡的实现模式，只对单个卡上对样本进行归一化，相当于减小了批量大小（batch-size）（详见BN工作原理部分）。 对于比较消耗显存的训练任务时，往往单卡上的相对批量过小，影响模型的收敛效果。 之前在我们在图像语义分割的实验中，Jerry和我就发现使用大模型的效果反而变差，实际上就是BN在作怪。 跨卡同步 Batch Normalization 可以使用全局的样本进行归一化，这样相当于‘增大‘了批量大小，这样训练效果不再受到使用 GPU 数量的影响。 最近在图像分割、物体检测的论文中，使用跨卡BN也会显著地提高实验效果，所以跨卡 BN 已然成为竞赛刷分、发论文的必备神器。</p>
+<p>可惜 PyTorch 并没有为我们实现这一功能，在接下来的介绍中我们会在 <code>apex</code> 中看到这一功能。</p>
+<h2 id="2-3-汇总"><a href="#2-3-汇总" class="headerlink" title="2.3 汇总"></a>2.3 汇总</h2><p>至此，我们就可以使用 torch.distributed 给我们带来的多进程训练的性能提升了，汇总代码结果如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># main.py</span></span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> argparse</span><br><span class="line"><span class="keyword">import</span> torch.distributed <span class="keyword">as</span> dist</span><br><span class="line"></span><br><span class="line">parser = argparse.ArgumentParser()</span><br><span class="line">parser.add_argument(<span class="string">'--local_rank'</span>, default=<span class="number">-1</span>, type=int,</span><br><span class="line">                    help=<span class="string">'node rank for distributed training'</span>)</span><br><span class="line">args = parser.parse_args()</span><br><span class="line"></span><br><span class="line">dist.init_process_group(backend=<span class="string">'nccl'</span>)</span><br><span class="line">torch.cuda.set_device(args.local_rank)</span><br><span class="line"></span><br><span class="line">train_dataset = ...</span><br><span class="line">train_sampler = torch.utils.data.distributed.DistributedSampler(train_dataset)</span><br><span class="line"></span><br><span class="line">train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=..., sampler=train_sampler)</span><br><span class="line"></span><br><span class="line">model = ...</span><br><span class="line">model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.local_rank])</span><br><span class="line"></span><br><span class="line">optimizer = optim.SGD(model.parameters())</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> epoch <span class="keyword">in</span> range(<span class="number">100</span>):</span><br><span class="line">   <span class="keyword">for</span> batch_idx, (data, target) <span class="keyword">in</span> enumerate(train_loader):</span><br><span class="line">      images = images.cuda(non_blocking=<span class="literal">True</span>)</span><br><span class="line">      target = target.cuda(non_blocking=<span class="literal">True</span>)</span><br><span class="line">      ...</span><br><span class="line">      output = model(images)</span><br><span class="line">      loss = criterion(output, target)</span><br><span class="line">      ...</span><br><span class="line">      optimizer.zero_grad()</span><br><span class="line">      loss.backward()</span><br><span class="line">      optimizer.step()</span><br></pre></td></tr></table></figure>
+<h1 id="3-NVIDIA-apex-混合精度训练、并行训练、同步BN"><a href="#3-NVIDIA-apex-混合精度训练、并行训练、同步BN" class="headerlink" title="3 NVIDIA/apex 混合精度训练、并行训练、同步BN"></a>3 NVIDIA/apex 混合精度训练、并行训练、同步BN</h1><h2 id="3-1-介绍"><a href="#3-1-介绍" class="headerlink" title="3.1 介绍"></a>3.1 介绍</h2><p>注：需要使用到<code>Volta结构</code>的GPU，目前只有Tesla V100和TITAN V系列支持。</p>
+<p>Apex 是 NVIDIA 开源的用于混合精度训练和分布式训练库。Apex 对混合精度训练的过程进行了封装，改两三行配置就可以进行混合精度的训练，从而大幅度降低显存占用，节约运算时间。此外，Apex 也提供了对分布式训练的封装，针对 NVIDIA 的 NCCL 通信库进行了优化。</p>
+<p>什么是<a href="https://zhuanlan.zhihu.com/p/79887894" target="_blank" rel="noopener">混合精度训练</a>？</p>
+<p>混合精度训练是在尽可能减少精度损失的情况下利用半精度浮点数加速训练。它使用FP16即半精度浮点数存储权重和梯度。在减少占用内存的同时起到了加速训练的效果。</p>
+<p>float16和float相比恰里，总结下来就是两个原因：<strong>内存占用更少，计算更快</strong>。</p>
+<ul>
+<li>内存占用更少：这个是显然可见的，通用的模型 fp16 占用的内存只需原来的一半。memory-bandwidth 减半所带来的好处：<ul>
+<li>模型占用的内存更小，训练的时候可以用更大的batchsize。</li>
+<li>模型训练时，通信量（特别是多卡，或者多机多卡）大幅减少，大幅减少等待时间，加快数据的流通。</li>
+</ul>
+</li>
+<li>计算更快：<ul>
+<li>目前的不少GPU都有针对 fp16 的计算进行优化。论文指出：在近期的GPU中，半精度的计算吞吐量可以是单精度的 2-8 倍；从下图我们可以看到混合精度训练几乎没有性能损失。</li>
+</ul>
+</li>
+</ul>
+<p><img src="http://cdn.iblue.tech/img/20200602/Ut7hSH.jpg" alt="experimental"></p>
+<h2 id="3-2-使用方式"><a href="#3-2-使用方式" class="headerlink" title="3.2 使用方式"></a>3.2 使用方式</h2><h3 id="3-2-1-混合精度"><a href="#3-2-1-混合精度" class="headerlink" title="3.2.1 混合精度"></a>3.2.1 混合精度</h3><p>在混合精度训练上，Apex 的封装十分优雅。直接使用 <code>amp.initialize</code> 包装模型和优化器，apex 就会自动帮助我们管理模型参数和优化器的精度了，根据精度需求不同可以传入其他配置参数。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> apex <span class="keyword">import</span> amp</span><br><span class="line"></span><br><span class="line">model, optimizer = amp.initialize(model, optimizer, opt_level=<span class="string">'O1'</span>)</span><br><span class="line"></span><br><span class="line">其中 opt_level 为精度的优化设置，O0（第一个字母是大写字母O）</span><br><span class="line">O0：纯FP32训练，可以作为accuracy的baseline；O1：混合精度训练（推荐使用），根据黑白名单自动决定使用FP16（GEMM, 卷积）还是FP32（Softmax）进行计算。O2：“几乎FP16”混合精度训练，不存在黑白名单，除了Batch norm，几乎都是用FP16计算。O3：纯FP16训练，很不稳定，但是可以作为speed的baseline；</span><br></pre></td></tr></table></figure>
+<h3 id="3-2-2-并行训练"><a href="#3-2-2-并行训练" class="headerlink" title="3.2.2 并行训练"></a>3.2.2 并行训练</h3><p>Apex也实现了并行训练模型的转换方式，改动并不大，主要是优化了NCCL的通信，因此代码和 torch.distributed 保持一致，换一下调用的API即可：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> apex <span class="keyword">import</span> amp</span><br><span class="line"><span class="keyword">from</span> apex.parallel <span class="keyword">import</span> DistributedDataParallel</span><br><span class="line"></span><br><span class="line">model, optimizer = amp.initialize(model, optimizer, opt_level=<span class="string">'O1'</span>)</span><br><span class="line">model = DistributedDataParallel(model, delay_allreduce=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 反向传播时需要调用 amp.scale_loss，用于根据loss值自动对精度进行缩放</span></span><br><span class="line"><span class="keyword">with</span> amp.scale_loss(loss, optimizer) <span class="keyword">as</span> scaled_loss:</span><br><span class="line">    scaled_loss.backward()</span><br></pre></td></tr></table></figure>
+<h3 id="3-2-3-同步BN"><a href="#3-2-3-同步BN" class="headerlink" title="3.2.3 同步BN"></a>3.2.3 同步BN</h3><p>Apex为我们实现了同步BN，用于解决单GPU的minibatch太小导致BN在训练时不收敛的问题。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> apex.parallel <span class="keyword">import</span> convert_syncbn_model</span><br><span class="line"><span class="keyword">from</span> apex.parallel <span class="keyword">import</span> DistributedDataParallel</span><br><span class="line"></span><br><span class="line"><span class="comment"># 注意顺序：三个顺序不能错</span></span><br><span class="line">model = convert_syncbn_model(UNet3d(n_channels=<span class="number">1</span>, n_classes=<span class="number">1</span>)).to(device)</span><br><span class="line">model, optimizer = amp.initialize(model, optimizer, opt_level=<span class="string">'O1'</span>)</span><br><span class="line">model = DistributedDataParallel(model, delay_allreduce=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+<p>调用该函数后，Apex会自动遍历model的所有层，将BatchNorm层替换掉。</p>
+<h2 id="3-3-汇总"><a href="#3-3-汇总" class="headerlink" title="3.3 汇总"></a>3.3 汇总</h2><p>Apex的并行训练部分主要与如下代码段有关：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># main.py</span></span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> argparse</span><br><span class="line"><span class="keyword">import</span> torch.distributed <span class="keyword">as</span> dist</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> apex.parallel <span class="keyword">import</span> convert_syncbn_model</span><br><span class="line"><span class="keyword">from</span> apex.parallel <span class="keyword">import</span> DistributedDataParallel</span><br><span class="line"></span><br><span class="line">parser = argparse.ArgumentParser()</span><br><span class="line">parser.add_argument(<span class="string">'--local_rank'</span>, default=<span class="number">-1</span>, type=int,</span><br><span class="line">                    help=<span class="string">'node rank for distributed training'</span>)</span><br><span class="line">args = parser.parse_args()</span><br><span class="line"></span><br><span class="line">dist.init_process_group(backend=<span class="string">'nccl'</span>)</span><br><span class="line">torch.cuda.set_device(args.local_rank)</span><br><span class="line"></span><br><span class="line">train_dataset = ...</span><br><span class="line">train_sampler = torch.utils.data.distributed.DistributedSampler(train_dataset)</span><br><span class="line"></span><br><span class="line">train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=..., sampler=train_sampler)</span><br><span class="line"></span><br><span class="line">model = ...</span><br><span class="line">model = convert_syncbn_model(model)</span><br><span class="line">model, optimizer = amp.initialize(model, optimizer)</span><br><span class="line">model = DistributedDataParallel(model, device_ids=[args.local_rank])</span><br><span class="line"></span><br><span class="line">optimizer = optim.SGD(model.parameters())</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> epoch <span class="keyword">in</span> range(<span class="number">100</span>):</span><br><span class="line">   <span class="keyword">for</span> batch_idx, (data, target) <span class="keyword">in</span> enumerate(train_loader):</span><br><span class="line">      images = images.cuda(non_blocking=<span class="literal">True</span>)</span><br><span class="line">      target = target.cuda(non_blocking=<span class="literal">True</span>)</span><br><span class="line">      ...</span><br><span class="line">      output = model(images)</span><br><span class="line">      loss = criterion(output, target)</span><br><span class="line">      optimizer.zero_grad()</span><br><span class="line">      <span class="keyword">with</span> amp.scale_loss(loss, optimizer) <span class="keyword">as</span> scaled_loss:</span><br><span class="line">         scaled_loss.backward()</span><br><span class="line">      optimizer.step()</span><br></pre></td></tr></table></figure>
+<p>使用 launch 启动：</p>
+<p><code>CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --nproc_per_node=4 main.py</code></p>
+<h1 id="4-多卡训练时的数据记录（TensorBoard、torch-save）"><a href="#4-多卡训练时的数据记录（TensorBoard、torch-save）" class="headerlink" title="4 多卡训练时的数据记录（TensorBoard、torch.save）"></a>4 多卡训练时的数据记录（TensorBoard、torch.save）</h1><h2 id="4-1-记录Loss曲线"><a href="#4-1-记录Loss曲线" class="headerlink" title="4.1 记录Loss曲线"></a>4.1 记录Loss曲线</h2><p>在我们使用多进程时，每个进程有自己计算得到的Loss，我们在进行数据记录时，希望对不同进程上的Loss取平均（也就是 map-reduce 的做法），对于其他需要记录的数据也都是一样的做法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">def reduce_tensor(tensor: torch.Tensor) -&amp;gt; torch.Tensor:</span><br><span class="line">    rt = tensor.clone()</span><br><span class="line">    distributed.all_reduce(rt, op=distributed.reduce_op.SUM)</span><br><span class="line">    rt /= distributed.get_world_size()</span><br><span class="line">    <span class="keyword">return</span> rt</span><br><span class="line"></span><br><span class="line"><span class="comment"># calculate loss</span></span><br><span class="line">loss = criterion(predict, labels)</span><br><span class="line">reduced_loss = reduce_tensor(loss.data)</span><br><span class="line">train_epoch_loss += reduced_loss.item()</span><br><span class="line"></span><br><span class="line">注意在写入TensorBoard的时候只让一个进程写入就够了：</span><br><span class="line"></span><br><span class="line"><span class="comment"># TensorBoard</span></span><br><span class="line"><span class="keyword">if</span> args.local_rank == <span class="number">0</span>:</span><br><span class="line">    writer.add_scalars(<span class="string">'Loss/training'</span>, &#123;</span><br><span class="line">        <span class="string">'train_loss'</span>: train_epoch_loss,</span><br><span class="line">        <span class="string">'val_loss'</span>: val_epoch_loss</span><br><span class="line">    &#125;, epoch + <span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="4-2-torch-save"><a href="#4-2-torch-save" class="headerlink" title="4.2 torch.save"></a>4.2 torch.save</h2><p>在保存模型的时候，由于是Apex混合精度模型，我们需要使用Apex提供的保存、载入方法（见<a href="https://github.com/NVIDIA/apex" target="_blank" rel="noopener">Apex README</a>）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Save checkpoint</span></span><br><span class="line">checkpoint = &#123;</span><br><span class="line">    <span class="string">'model'</span>: model.state_dict(),</span><br><span class="line">    <span class="string">'optimizer'</span>: optimizer.state_dict(),</span><br><span class="line">    <span class="string">'amp'</span>: amp.state_dict()</span><br><span class="line">&#125;</span><br><span class="line">torch.save(checkpoint, <span class="string">'amp_checkpoint.pt'</span>)</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line"><span class="comment"># Restore</span></span><br><span class="line">model = ...</span><br><span class="line">optimizer = ...</span><br><span class="line">checkpoint = torch.load(<span class="string">'amp_checkpoint.pt'</span>)</span><br><span class="line"></span><br><span class="line">model, optimizer = amp.initialize(model, optimizer, opt_level=opt_level)</span><br><span class="line">model.load_state_dict(checkpoint[<span class="string">'model'</span>])</span><br><span class="line">optimizer.load_state_dict(checkpoint[<span class="string">'optimizer'</span>])</span><br><span class="line">amp.load_state_dict(checkpoint[<span class="string">'amp'</span>])</span><br><span class="line"></span><br><span class="line"><span class="comment"># Continue training</span></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<h1 id="5-多卡后的-batch-size-和-learning-rate-的调整"><a href="#5-多卡后的-batch-size-和-learning-rate-的调整" class="headerlink" title="5 多卡后的 batch_size 和 learning_rate 的调整"></a>5 多卡后的 batch_size 和 learning_rate 的调整</h1><p>见：<a href="https://www.zhihu.com/question/64134994/answer/217813386" target="_blank" rel="noopener">https://www.zhihu.com/question/64134994/answer/217813386</a></p>
+<p>从理论上来说，lr = batch_size * base lr，因为 batch_size 的增大会导致你 update 次数的减少，所以为了达到相同的效果，应该是同比例增大的。</p>
+<p>但是更大的 lr 可能会导致收敛的不够好，尤其是在刚开始的时候，如果你使用很大的 lr，可能会直接爆炸，所以可能会需要一些 warmup 来逐步的把 lr 提高到你想设定的 lr。</p>
+<p>实际应用中发现不一定要同比例增长，有时候可能增大到 batch_size/2 倍的效果已经很不错了。</p>
+<p>在我的实验中，使用8卡训练，则增大batch_size 8倍，learning_rate 4倍是差不多的。</p>
+<h1 id="6-完整代码示例（我用来训练3D-U-Net的）"><a href="#6-完整代码示例（我用来训练3D-U-Net的）" class="headerlink" title="6 完整代码示例（我用来训练3D U-Net的）"></a>6 完整代码示例（我用来训练3D U-Net的）</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> datetime</span><br><span class="line"><span class="keyword">import</span> argparse</span><br><span class="line"><span class="keyword">from</span> tqdm <span class="keyword">import</span> tqdm</span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> torch <span class="keyword">import</span> distributed, optim</span><br><span class="line"><span class="keyword">from</span> torch.utils.data <span class="keyword">import</span> DataLoader</span><br><span class="line"><span class="keyword">from</span> torch.utils.data.distributed <span class="keyword">import</span> DistributedSampler</span><br><span class="line"><span class="keyword">from</span> torch.utils.tensorboard <span class="keyword">import</span> SummaryWriter</span><br><span class="line"><span class="keyword">from</span> apex <span class="keyword">import</span> amp</span><br><span class="line"><span class="keyword">from</span> apex.parallel <span class="keyword">import</span> convert_syncbn_model</span><br><span class="line"><span class="keyword">from</span> apex.parallel <span class="keyword">import</span> DistributedDataParallel</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> models <span class="keyword">import</span> UNet3d</span><br><span class="line"><span class="keyword">from</span> datasets <span class="keyword">import</span> IronGrain3dDataset</span><br><span class="line"><span class="keyword">from</span> losses <span class="keyword">import</span> BCEDiceLoss</span><br><span class="line"><span class="keyword">from</span> eval <span class="keyword">import</span> eval_net</span><br><span class="line"></span><br><span class="line">train_images_folder = <span class="string">'../../datasets/IronGrain/74x320x320/train_patches/images/'</span></span><br><span class="line">train_labels_folder = <span class="string">'../../datasets/IronGrain/74x320x320/train_patches/labels/'</span></span><br><span class="line">val_images_folder = <span class="string">'../../datasets/IronGrain/74x320x320/val_patches/images/'</span></span><br><span class="line">val_labels_folder = <span class="string">'../../datasets/IronGrain/74x320x320/val_patches/labels/'</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">parse</span><span class="params">()</span>:</span></span><br><span class="line">    parser = argparse.ArgumentParser()</span><br><span class="line">    parser.add_argument(<span class="string">'--local_rank'</span>, type=int, default=<span class="number">0</span>)</span><br><span class="line">    args = parser.parse_args()</span><br><span class="line">    <span class="keyword">return</span> args</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    args = parse()</span><br><span class="line">    torch.cuda.set_device(args.local_rank)</span><br><span class="line">    distributed.init_process_group(</span><br><span class="line">        <span class="string">'nccl'</span>,</span><br><span class="line">        init_method=<span class="string">'env://'</span></span><br><span class="line">    )</span><br><span class="line">    train_dataset = IronGrain3dDataset(train_images_folder, train_labels_folder)</span><br><span class="line">    val_dataset = IronGrain3dDataset(val_images_folder, val_labels_folder)</span><br><span class="line">    train_sampler = DistributedSampler(train_dataset)</span><br><span class="line">    val_sampler = DistributedSampler(val_dataset)</span><br><span class="line"></span><br><span class="line">    epochs = <span class="number">100</span></span><br><span class="line">    batch_size = <span class="number">8</span></span><br><span class="line">    lr = <span class="number">2e-4</span></span><br><span class="line">    weight_decay = <span class="number">1e-4</span></span><br><span class="line">    device = torch.device(<span class="string">f'cuda:<span class="subst">&#123;args.local_rank&#125;</span>'</span>)</span><br><span class="line"></span><br><span class="line">    train_loader = DataLoader(train_dataset, batch_size=batch_size, num_workers=<span class="number">4</span>,</span><br><span class="line">                              pin_memory=<span class="literal">True</span>, sampler=train_sampler)</span><br><span class="line">    val_loader = DataLoader(val_dataset, batch_size=batch_size, num_workers=<span class="number">4</span>,</span><br><span class="line">                            pin_memory=<span class="literal">True</span>, sampler=val_sampler)</span><br><span class="line"></span><br><span class="line">    net = convert_syncbn_model(UNet3d(n_channels=<span class="number">1</span>, n_classes=<span class="number">1</span>)).to(device)</span><br><span class="line">    optimizer = optim.Adam(net.parameters(), lr=lr, weight_decay=weight_decay)</span><br><span class="line">    net, optimizer = amp.initialize(net, optimizer, opt_level=<span class="string">'O1'</span>)</span><br><span class="line">    net = DistributedDataParallel(net, delay_allreduce=<span class="literal">True</span>)</span><br><span class="line">    scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[<span class="number">25</span>, <span class="number">50</span>, <span class="number">75</span>], gamma=<span class="number">0.2</span>)</span><br><span class="line">    criterion = BCEDiceLoss().to(device)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> args.local_rank == <span class="number">0</span>:</span><br><span class="line">        print(<span class="string">f'''Starting training:</span></span><br><span class="line"><span class="string">            Epochs:          <span class="subst">&#123;epochs&#125;</span></span></span><br><span class="line"><span class="string">            Batch size:      <span class="subst">&#123;batch_size&#125;</span></span></span><br><span class="line"><span class="string">            Learning rate:   <span class="subst">&#123;lr&#125;</span></span></span><br><span class="line"><span class="string">            Training size:   <span class="subst">&#123;len(train_dataset)&#125;</span></span></span><br><span class="line"><span class="string">            Validation size: <span class="subst">&#123;len(val_dataset)&#125;</span></span></span><br><span class="line"><span class="string">            Device:          <span class="subst">&#123;device.type&#125;</span></span></span><br><span class="line"><span class="string">        '''</span>)</span><br><span class="line">        writer = SummaryWriter(</span><br><span class="line">            log_dir=<span class="string">f'runs/irongrain/unet3d_32x160x160_BS_<span class="subst">&#123;batch_size&#125;</span>_<span class="subst">&#123;datetime.datetime.now()&#125;</span>'</span></span><br><span class="line">        )</span><br><span class="line">    <span class="keyword">for</span> epoch <span class="keyword">in</span> range(epochs):</span><br><span class="line">        train_epoch_loss = <span class="number">0</span></span><br><span class="line">        <span class="keyword">with</span> tqdm(total=len(train_dataset), desc=<span class="string">f'Epoch <span class="subst">&#123;epoch + <span class="number">1</span>&#125;</span>/<span class="subst">&#123;epochs&#125;</span>'</span>, unit=<span class="string">'img'</span>) <span class="keyword">as</span> pbar:</span><br><span class="line"></span><br><span class="line">            images = <span class="literal">None</span></span><br><span class="line">            labels = <span class="literal">None</span></span><br><span class="line">            predict = <span class="literal">None</span></span><br><span class="line"></span><br><span class="line">            <span class="comment"># train</span></span><br><span class="line">            net.train()</span><br><span class="line">            <span class="keyword">for</span> batch_idx, batch <span class="keyword">in</span> enumerate(train_loader):</span><br><span class="line">                images = batch[<span class="string">'image'</span>]</span><br><span class="line">                labels = batch[<span class="string">'label'</span>]</span><br><span class="line">                images = images.to(device, dtype=torch.float32)</span><br><span class="line">                labels = labels.to(device, dtype=torch.float32)</span><br><span class="line"></span><br><span class="line">                predict = net(images)</span><br><span class="line"></span><br><span class="line">                <span class="comment"># calculate loss</span></span><br><span class="line">                loss = criterion(predict, labels)</span><br><span class="line">                reduced_loss = reduce_tensor(loss.data)</span><br><span class="line">                train_epoch_loss += reduced_loss.item()</span><br><span class="line"></span><br><span class="line">                <span class="comment"># optimize</span></span><br><span class="line">                optimizer.zero_grad()</span><br><span class="line">                <span class="keyword">with</span> amp.scale_loss(loss, optimizer) <span class="keyword">as</span> scaled_loss:</span><br><span class="line">                    scaled_loss.backward()</span><br><span class="line">                optimizer.step()</span><br><span class="line">                scheduler.step()</span><br><span class="line"></span><br><span class="line">                <span class="comment"># set progress bar</span></span><br><span class="line">                pbar.set_postfix(**&#123;<span class="string">'loss (batch)'</span>: loss.item()&#125;)</span><br><span class="line">                pbar.update(images.shape[<span class="number">0</span>])</span><br><span class="line"></span><br><span class="line">            train_epoch_loss /= (batch_idx + <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">            <span class="comment"># eval</span></span><br><span class="line">            val_epoch_loss, dice, iou = eval_net(net, criterion, val_loader, device, len(val_dataset))</span><br><span class="line"></span><br><span class="line">            <span class="comment"># TensorBoard</span></span><br><span class="line">            <span class="keyword">if</span> args.local_rank == <span class="number">0</span>:</span><br><span class="line">                writer.add_scalars(<span class="string">'Loss/training'</span>, &#123;</span><br><span class="line">                    <span class="string">'train_loss'</span>: train_epoch_loss,</span><br><span class="line">                    <span class="string">'val_loss'</span>: val_epoch_loss</span><br><span class="line">                &#125;, epoch + <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">                writer.add_scalars(<span class="string">'Metrics/validation'</span>, &#123;</span><br><span class="line">                    <span class="string">'dice'</span>: dice,</span><br><span class="line">                    <span class="string">'iou'</span>: iou</span><br><span class="line">                &#125;, epoch + <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">                writer.add_images(<span class="string">'images'</span>, images[:, :, <span class="number">0</span>, :, :], epoch + <span class="number">1</span>)</span><br><span class="line">                writer.add_images(<span class="string">'Label/ground_truth'</span>, labels[:, :, <span class="number">0</span>, :, :], epoch + <span class="number">1</span>)</span><br><span class="line">                writer.add_images(<span class="string">'Label/predict'</span>, torch.sigmoid(predict[:, :, <span class="number">0</span>, :, :]) &amp;gt; <span class="number">0.5</span>, epoch + <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> args.local_rank == <span class="number">0</span>:</span><br><span class="line">                torch.save(net, <span class="string">f'unet3d-epoch<span class="subst">&#123;epoch + <span class="number">1</span>&#125;</span>.pth'</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def reduce_tensor(tensor: torch.Tensor) -&amp;gt; torch.Tensor:</span><br><span class="line">    rt = tensor.clone()</span><br><span class="line">    distributed.all_reduce(rt, op=distributed.reduce_op.SUM)</span><br><span class="line">    rt /= distributed.get_world_size()</span><br><span class="line">    <span class="keyword">return</span> rt</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li><a href="https://github.com/NVIDIA/apex" target="_blank" rel="noopener">NVIDIA/apex</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/98535650" target="_blank" rel="noopener">当代研究生应当掌握的并行训练方法（单机多卡）</a></li>
+<li><a href="https://www.zhihu.com/question/64134994/answer/217813386" target="_blank" rel="noopener">如何理解深度学习分布式训练中的large batch size与learning rate的关系？</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/105755472" target="_blank" rel="noopener">Pytorch中的Distributed Data Parallel与混合精度训练（Apex）</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/40496177" target="_blank" rel="noopener">跨卡同步 Batch Normalization</a></li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/深度学习/" rel="tag"># 深度学习</a>
+          
+            <a href="/tags/pytorch/" rel="tag"># pytorch</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/07/11/读书笔记-《深度学习》第六章-深度前馈网络/" rel="next" title="读书笔记 - 《深度学习》第六章 深度前馈网络">
+                <i class="fa fa-chevron-left"></i> 读书笔记 - 《深度学习》第六章 深度前馈网络
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Todd Gao</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">39</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">16</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/bingmang" title="GitHub &rarr; https://github.com/bingmang" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:todd.g@qq.com" title="E-Mail &rarr; mailto:todd.g@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-为什么不用nn-DataParallel"><span class="nav-number">1.</span> <span class="nav-text">1 为什么不用nn.DataParallel ?</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-最简单的并行方式"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 最简单的并行方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-nn-DataParallel-的缺点"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 nn.DataParallel 的缺点</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-多进程的-torch-distributed"><span class="nav-number">2.</span> <span class="nav-text">2 多进程的 torch.distributed</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-介绍"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-使用方式"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 使用方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-1-启动方式的改变"><span class="nav-number">2.2.1.</span> <span class="nav-text">2.2.1 启动方式的改变</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-2-初始化"><span class="nav-number">2.2.2.</span> <span class="nav-text">2.2.2 初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-3-DataLoader"><span class="nav-number">2.2.3.</span> <span class="nav-text">2.2.3 DataLoader</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-4-模型的初始化"><span class="nav-number">2.2.4.</span> <span class="nav-text">2.2.4 模型的初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-5-同步BN"><span class="nav-number">2.2.5.</span> <span class="nav-text">2.2.5 同步BN</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-汇总"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 汇总</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-NVIDIA-apex-混合精度训练、并行训练、同步BN"><span class="nav-number">3.</span> <span class="nav-text">3 NVIDIA/apex 混合精度训练、并行训练、同步BN</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-介绍"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-使用方式"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 使用方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-1-混合精度"><span class="nav-number">3.2.1.</span> <span class="nav-text">3.2.1 混合精度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-2-并行训练"><span class="nav-number">3.2.2.</span> <span class="nav-text">3.2.2 并行训练</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-3-同步BN"><span class="nav-number">3.2.3.</span> <span class="nav-text">3.2.3 同步BN</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-汇总"><span class="nav-number">3.3.</span> <span class="nav-text">3.3 汇总</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-多卡训练时的数据记录（TensorBoard、torch-save）"><span class="nav-number">4.</span> <span class="nav-text">4 多卡训练时的数据记录（TensorBoard、torch.save）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-记录Loss曲线"><span class="nav-number">4.1.</span> <span class="nav-text">4.1 记录Loss曲线</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-torch-save"><span class="nav-number">4.2.</span> <span class="nav-text">4.2 torch.save</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-多卡后的-batch-size-和-learning-rate-的调整"><span class="nav-number">5.</span> <span class="nav-text">5 多卡后的 batch_size 和 learning_rate 的调整</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-完整代码示例（我用来训练3D-U-Net的）"><span class="nav-number">6.</span> <span class="nav-text">6 完整代码示例（我用来训练3D U-Net的）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">7.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">  <a href="http://www.beian.miit.gov.cn" rel="noopener" target="_blank">京ICP备17044274号-2 </a>&copy; 2018 – <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Todd Gao</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.0.1</div>
+
+
+
+
+        
+
+
+
+
+  <script>
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//tajs.qq.com/stats?sId=66179477";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=7.0.1"></script>
+
+  <script src="/js/src/motion.js?v=7.0.1"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/schemes/muse.js?v=7.0.1"></script>
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=7.0.1"></script>
+<script src="/js/src/post-details.js?v=7.0.1"></script>
+
+
+
+  
+
+
+  <script src="/js/src/next-boot.js?v=7.0.1"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
