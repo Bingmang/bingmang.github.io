@@ -3,9 +3,7 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width">
-<meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.4.0">
-
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.0.0-rc1">
 
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
@@ -16,21 +14,24 @@
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Serif+SC:300,300italic,400,400italic,700,700italic%7CMontserrat:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"mingfei.buzz","root":"/","images":"/images","scheme":"Gemini","version":"8.7.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
-<meta name="description" content="注：本博客所有文章禁止转载，将追究法律责任。 前言在分布式系统中，可观测性（Observability）是十分重要的组成之一，如果没有可观测性系统，在排查问题时通常只能 SSH 到每一台机器上去查看分散的日志，排查问题的效率将变的非常低。 而可观测性系统通常由三部分组成：Logs、Metrics、Tracing：  Logs：日志采集监测系统，常见的技术栈为 ELK 全家桶（Elasticsear">
+<script class="next-config" data-name="main" type="application/json">{"hostname":"mingfei.buzz","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.15.1","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="注：本博客所有文章禁止转载，将追究法律责任。 前言在分布式系统中，可观测性（Observability）是十分重要的组成之一，如果没有可观测性系统，在排查问题时通常只能 SSH 到每一台机器上去查看分散的日志，排查问题的效率将变的非常低。 而可观测性系统通常由三部分组成：Logs、Metrics、Tracing：  Logs：日志采集监测系统，常见的技术栈为 ELK 全家桶（Elasticsear">
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用 Vector 快速搭建日志采集系统">
 <meta property="og:url" content="https://mingfei.buzz/vector-guide/index.html">
 <meta property="og:site_name" content="Mingfei.buzz v1.0.1">
 <meta property="og:description" content="注：本博客所有文章禁止转载，将追究法律责任。 前言在分布式系统中，可观测性（Observability）是十分重要的组成之一，如果没有可观测性系统，在排查问题时通常只能 SSH 到每一台机器上去查看分散的日志，排查问题的效率将变的非常低。 而可观测性系统通常由三部分组成：Logs、Metrics、Tracing：  Logs：日志采集监测系统，常见的技术栈为 ELK 全家桶（Elasticsear">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://vector.dev/img/going-to-prod/separating-concerns.png">
 <meta property="article:published_time" content="2022-06-26T04:58:01.000Z">
-<meta property="article:modified_time" content="2022-06-26T07:24:59.881Z">
+<meta property="article:modified_time" content="2022-06-26T07:55:52.207Z">
 <meta property="article:author" content="Todd Gao">
 <meta property="article:tag" content="monitoring">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://vector.dev/img/going-to-prod/separating-concerns.png">
 
 
 <link rel="canonical" href="https://mingfei.buzz/vector-guide/">
@@ -46,6 +47,10 @@
 
 
 
+
+
+
+
   <noscript>
     <link rel="stylesheet" href="/css/noscript.css">
   </noscript>
@@ -55,8 +60,8 @@
   <div class="headband"></div>
 
   <main class="main">
-    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-container">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
   <div class="site-nav-toggle">
     <div class="toggle" aria-label="Toggle navigation bar" role="button">
         <span class="toggle-line"></span>
@@ -69,14 +74,14 @@
 
     <a href="/" class="brand" rel="start">
       <i class="logo-line"></i>
-      <h1 class="site-title">Mingfei.buzz v1.0.1</h1>
+      <p class="site-title">Mingfei.buzz v1.0.1</p>
       <i class="logo-line"></i>
     </a>
       <p class="site-subtitle" itemprop="description">A SRE, don't panic.</p>
   </div>
 
   <div class="site-nav-right">
-    <div class="toggle popup-trigger">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
     </div>
   </div>
 </div>
@@ -84,26 +89,16 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu">
-        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li>
-        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li>
-        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li>
-        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
   </ul>
 </nav>
 
 
 
 
-</div>
+</header>
         
   
-  <div class="toggle sidebar-toggle" role="button">
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-  </div>
-
   <aside class="sidebar">
 
     <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
@@ -124,14 +119,13 @@
         <!--/noindex-->
 
         <div class="site-overview-wrap sidebar-panel">
-          <div class="site-overview">
-            <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <img class="site-author-image" itemprop="image" alt="Todd Gao"
       src="/images/red-maple-leaf.png">
   <p class="site-author-name" itemprop="name">Todd Gao</p>
   <div class="site-description" itemprop="description"></div>
 </div>
-<div class="site-state-wrap site-overview-item animated">
+<div class="site-state-wrap animated">
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
@@ -146,38 +140,24 @@
       </div>
   </nav>
 </div>
-  <div class="links-of-author site-overview-item animated">
+  <div class="links-of-author animated">
       <span class="links-of-author-item">
-        <a href="https://github.com/bingmang" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;bingmang" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+        <a href="https://github.com/bingmang" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;bingmang" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
       </span>
       <span class="links-of-author-item">
-        <a href="mailto:ustbbingmang@gmail.com" title="E-Mail → mailto:ustbbingmang@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+        <a href="mailto:ustbbingmang@gmail.com" title="E-Mail → mailto:ustbbingmang@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
       </span>
   </div>
 
-
-
-          </div>
         </div>
       </div>
     </div>
-  </aside>
-  <div class="sidebar-dimmer"></div>
-
-
-    </header>
 
     
-  <div class="back-to-top" role="button" aria-label="Back to top">
-    <i class="fa fa-arrow-up"></i>
-    <span>0%</span>
-  </div>
-  <div class="reading-progress-bar"></div>
+  </aside>
 
-<noscript>
-  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
-</noscript>
 
+    </div>
 
     <div class="main-inner post posts-expand">
 
@@ -195,11 +175,16 @@
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/red-maple-leaf.png">
       <meta itemprop="name" content="Todd Gao">
-      <meta itemprop="description" content="">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="Mingfei.buzz v1.0.1">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="使用 Vector 快速搭建日志采集系统 | Mingfei.buzz v1.0.1">
+      <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -215,7 +200,7 @@
       <span class="post-meta-item-text">Posted on</span>
       
 
-      <time title="Created: 2022-06-26 12:58:01 / Modified: 15:24:59" itemprop="dateCreated datePublished" datetime="2022-06-26T12:58:01+08:00">2022-06-26</time>
+      <time title="Created: 2022-06-26 12:58:01 / Modified: 15:55:52" itemprop="dateCreated datePublished" datetime="2022-06-26T12:58:01+08:00">2022-06-26</time>
     </span>
 
   
@@ -237,12 +222,15 @@
 <li>Tracing：常见的技术是在日志中打点 trace_id，或使用 eBPF 技术。</li>
 </ul>
 <p>本文主要将精力放在 Logs，也就是日志采集监测系统搭建这里。</p>
+<p><img src="https://vector.dev/img/going-to-prod/separating-concerns.png" alt="vector"></p>
+<span id="more"></span>
+
 <h2 id="技术选型"><a href="#技术选型" class="headerlink" title="技术选型"></a>技术选型</h2><p>前面提到，日志采集系统最常见的技术栈为 ELK 全家桶，而随着 elastic 商业性的扩大，其将项目的 license 替换为了 <a target="_blank" rel="noopener" href="https://www.elastic.co/cn/licensing/elastic-license">Elastic License</a>，能否自由地在商用软件中使用还需要仔细调研。且现在的 Kibana 默认界面启动后，会有很多需要购买 license 才能用的功能摆在界面上，让人觉得十分臃肿。</p>
 <p>从 Uber 的这篇博客（<a target="_blank" rel="noopener" href="https://eng.uber.com/logging/">Fast and Reliable Schema-Agnostic Log Analytics Platform</a>）中，我们能看到越来越多的开发者愿意将 Elasticsearch 换到性价比更高的 Clickhouse 中。因为 Elasticsearch 的维护成本实在是太高了（前公司内部 ES 集群都是部署在 SSD 上的，维护成本十分昂贵），而 Clickhouse 在<a target="_blank" rel="noopener" href="https://clickhouse.com/docs/zh/introduction/distinctive-features">介绍</a>中提到：</p>
 <blockquote>
 <p>ClickHouse被设计用于工作在传统磁盘上的系统，它提供每GB更低的存储成本，但如果可以使用SSD和内存，它也会合理的利用这些资源。ClickHouse会使用服务器上一切可用的资源，从而以最自然的方式并行处理大型查询。</p>
 </blockquote>
-<p>而 Logstash 官方并没有支持 Clickhouse 的 sink plugin，在一个开源实现（<a target="_blank" rel="noopener" href="https://github.com/funcmike/logstash-output-clickhouse">funcmike/logstash-output-clickhouse</a>）中，原作者在 readme 中提到他转到了 Vector，我是在这里才了解到 Vector 这个项目的。Vector 官方支持了 Clickhouse、Loki 等多种 sink 方式，且 Vector 具有以下特性：</p>
+<p>而 Logstash 官方并没有支持 Clickhouse 的 sink plugin，在一个开源实现（<a target="_blank" rel="noopener" href="https://github.com/funcmike/logstash-output-clickhouse">funcmike&#x2F;logstash-output-clickhouse</a>）中，原作者在 readme 中提到他转到了 Vector，我是在这里才了解到 Vector 这个项目的。Vector 官方支持了 Clickhouse、Loki 等多种 sink 方式，且 Vector 具有以下特性：</p>
 <ul>
 <li>配置灵活，可以非常自由地组装日志流，复用日志流中的任意一个组件；</li>
 <li>使用 Rust 语言编写，性能有保证，错误必须被显式处理（类似于 go 的 err 编程……）；</li>
@@ -277,7 +265,7 @@
 <li>transforms：日志转换规则，可通过正则的方式从日志中提取字段，也可以做一些简单的计算，能覆盖大部分场景，其中最强大的是 remap 功能，类似于 lua 脚本但有更简单的语法，会由 rust interpreter 执行；</li>
 <li>sinks：日志下沉配置，支持 clickhouse、loki、es、kafka、file 等，还有 vector 自身。</li>
 </ul>
-<h3 id="sources"><a href="#sources" class="headerlink" title="sources"></a>sources</h3><p>配置需要采集的日志源，这里仅说明最常用的 file 类型日志源（<a target="_blank" rel="noopener" href="https://vector.dev/docs/reference/configuration/sources/file/#output-logs">sources/File</a>）。</p>
+<h3 id="sources"><a href="#sources" class="headerlink" title="sources"></a>sources</h3><p>配置需要采集的日志源，这里仅说明最常用的 file 类型日志源（<a target="_blank" rel="noopener" href="https://vector.dev/docs/reference/configuration/sources/file/#output-logs">sources&#x2F;File</a>）。</p>
 <p>常用的配置项只有 <code>include</code> 和 <code>read_from</code> ：</p>
 <ul>
 <li>include：文件路径，支持通配符，例如 <code>/var/log/**/*.log</code> ；</li>
@@ -292,13 +280,13 @@
 </ul>
 <h3 id="transforms"><a href="#transforms" class="headerlink" title="transforms"></a>transforms</h3><p>而 transforms 的功能就是为了处理来自 sources 的事件，通过配置 inputs 来指定需要收到的数据流，inputs 里当然也可以放其他的 transform_id 来自由组装日志流。</p>
 <p>而 transforms 的类型有很多，但官网似乎为了精简功能，将大部分 transforms 都隐藏了，能被 remap transform 实现的就不展示了，但类似于很简单的添加字段、删除字段这些需求，是没必要使用到 remap 的（remap 会启动一个 rust interpreter，在性能上可能会比使用简单的 transforms 来的低）。</p>
-<p>在日志处理中，我们常用的组件会有：remap, filter, route, add_fileds, remove_fields 等。remap 即可满足几乎所有的需求：<a target="_blank" rel="noopener" href="https://vector.dev/docs/reference/vrl/%EF%BC%8C%E4%BD%86%E5%A6%82%E6%9E%9C%E5%8F%AA%E6%98%AF%E4%B8%BA%E4%BA%86%E4%BD%BF%E7%94%A8%E7%AE%80%E5%8D%95%E7%9A%84%E6%B7%BB%E5%8A%A0%E3%80%81%E5%88%A0%E9%99%A4%E5%AD%97%E6%AE%B5%EF%BC%8C%E5%8F%AF%E4%BD%BF%E7%94%A8%E8%A2%AB%E5%AE%98%E7%BD%91%E9%9A%90%E8%97%8F%E8%B5%B7%E6%9D%A5%E7%9A%84">https://vector.dev/docs/reference/vrl/，但如果只是为了使用简单的添加、删除字段，可使用被官网隐藏起来的</a> transforms: <a target="_blank" rel="noopener" href="https://assume-role-docs--vector-project.netlify.app/docs/reference/transforms/add_fields/">https://assume-role-docs--vector-project.netlify.app/docs/reference/transforms/add_fields/</a></p>
+<p>在日志处理中，我们常用的组件会有：remap, filter, route, add_fileds, remove_fields 等。remap 即可满足几乎所有的需求：<a target="_blank" rel="noopener" href="https://vector.dev/docs/reference/vrl/">https://vector.dev/docs/reference/vrl/</a> ，但如果只是为了使用简单的添加、删除字段，可使用被官网隐藏起来的 transforms: <a target="_blank" rel="noopener" href="https://assume-role-docs--vector-project.netlify.app/docs/reference/transforms/add_fields/">https://assume-role-docs--vector-project.netlify.app/docs/reference/transforms/add_fields/</a></p>
 <p>在 <code>parse_timestamp</code> 的过程中，vector 会根据当前时区做转换，详见附录。</p>
 <h3 id="sinks"><a href="#sinks" class="headerlink" title="sinks"></a>sinks</h3><p>将日志下沉到某个地方，这里以 clickhouse 为例：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[sinks.my_sink_id]</span><br><span class="line">type = &quot;clickhouse&quot;</span><br><span class="line">inputs = [ &quot;my-source-or-transform-id&quot; ]</span><br><span class="line">database = &quot;mydatabase&quot;</span><br><span class="line">endpoint = &quot;http://localhost:8123&quot;</span><br><span class="line">table = &quot;mytable&quot;</span><br><span class="line">compression = &quot;gzip&quot;</span><br><span class="line">skip_unknown_fields = true</span><br></pre></td></tr></table></figure>
 <p>这样就可以把数据写入 Clickhouse 了，在 sink 中常用的配置项可能是 <code>acknowledgements.enabled=true</code> 当这条开启后，只有日志下沉成功了，日志才表示上传成功（否则日志会停留在 sources 被标记为发送失败，会重试发送）。</p>
 <h2 id="数据存储与查询"><a href="#数据存储与查询" class="headerlink" title="数据存储与查询"></a>数据存储与查询</h2><p>我们使用 Clickhouse 做为数据存储，建表语句通常如下：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> IF <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> logs.libvirtd (</span><br><span class="line">    host String,</span><br><span class="line">    service String,</span><br><span class="line">    cluster_uuid String,</span><br><span class="line">    host_uuid String,</span><br><span class="line">    file String,</span><br><span class="line">    message String,</span><br><span class="line">    <span class="type">time</span> DateTime,</span><br><span class="line">    severity String,</span><br><span class="line">    pid UInt32,</span><br><span class="line">    caller String,</span><br><span class="line">    event String</span><br><span class="line">)</span><br><span class="line">ENGINE <span class="operator">=</span> MergeTree()</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> <span class="type">time</span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> IF <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> logs.libvirtd (</span><br><span class="line">    host String,</span><br><span class="line">    service String,</span><br><span class="line">    file String,</span><br><span class="line">    message String,</span><br><span class="line">    <span class="type">time</span> DateTime,</span><br><span class="line">    severity String,</span><br><span class="line">    pid UInt32,</span><br><span class="line">    caller String,</span><br><span class="line">    event String</span><br><span class="line">)</span><br><span class="line">ENGINE <span class="operator">=</span> MergeTree()</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> <span class="type">time</span>;</span><br></pre></td></tr></table></figure>
 
 <p>其中 DateTime 只支持到秒级，所以前面的 remap 中还需要添加 <code>.time = format_timestamp!(.timestamp, &quot;%Y-%m-%d %H:%M:%S)&quot;</code> 若要支持到更细精度的，可使用 DateTime64 存储。</p>
 <p>到这里，整条日志流应该就可以运行起来了，也可以通过 Grafana 配置 Clickhouse DataSource 来查询日志，但效果还是差了些，不如 Grafana 的亲儿子 Loki 能做到类似于 Kibana 的查询效果。</p>
@@ -380,7 +368,7 @@
 
 <div class="copyright">
   &copy; 
-  <span itemprop="copyrightYear">2022</span>
+  <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -391,6 +379,18 @@
 
     </div>
   </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
 
   
   <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
@@ -406,9 +406,9 @@
 
 
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
 
-<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"Bingmang","repo":"hexo-gitalk-issues","client_id":"ede5352546943bb89615","client_secret":"010fec71f7c3eb41c545292b79235bb5001aec7e","admin_user":"Bingmang","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":null,"js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"30d63b2dd1cebb61045a50fb3dd98beb"}</script>
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"Bingmang","repo":"hexo-gitalk-issues","client_id":"ede5352546943bb89615","client_secret":"010fec71f7c3eb41c545292b79235bb5001aec7e","admin_user":"Bingmang","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":null,"js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.js","integrity":"sha256-MVK9MGD/XJaGyIghSVrONSnoXoGh3IFxLw0zfvzpxR4="},"path_md5":"30d63b2dd1cebb61045a50fb3dd98beb"}</script>
 <script src="/js/third-party/comments/gitalk.js"></script>
 
 </body>
