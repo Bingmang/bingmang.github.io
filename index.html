@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Serif+SC:300,300italic,400,400italic,700,700italic%7CMontserrat:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"mingfei.buzz","root":"/","images":"/images","scheme":"Gemini","version":"8.7.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+<meta property="og:type" content="website">
+<meta property="og:title" content="Mingfei.buzz v1.0.1">
+<meta property="og:url" content="https://mingfei.buzz/index.html">
+<meta property="og:site_name" content="Mingfei.buzz v1.0.1">
+<meta property="og:locale" content="en_US">
+<meta property="article:author" content="Todd Gao">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://mingfei.buzz/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":true,"isPost":false,"lang":"en","comments":"","permalink":"","path":"index.html","title":""}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Mingfei.buzz v1.0.1</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Mingfei.buzz v1.0.1</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">A SRE, don't panic.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-overview">
+            <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Todd Gao"
+      src="/images/red-maple-leaf.png">
+  <p class="site-author-name" itemprop="name">Todd Gao</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/bingmang" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;bingmang" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:ustbbingmang@gmail.com" title="E-Mail → mailto:ustbbingmang@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://mingfei.buzz/vector-guide/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/red-maple-leaf.png">
+      <meta itemprop="name" content="Todd Gao">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mingfei.buzz v1.0.1">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/vector-guide/" class="post-title-link" itemprop="url">使用 Vector 快速搭建日志采集系统</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2022-06-26 12:58:01 / Modified: 15:24:59" itemprop="dateCreated datePublished" datetime="2022-06-26T12:58:01+08:00">2022-06-26</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>注：本博客所有文章禁止转载，将追究法律责任。</strong></p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在分布式系统中，可观测性（Observability）是十分重要的组成之一，如果没有可观测性系统，在排查问题时通常只能 SSH 到每一台机器上去查看分散的日志，排查问题的效率将变的非常低。</p>
+<p>而可观测性系统通常由三部分组成：Logs、Metrics、Tracing：</p>
+<ul>
+<li>Logs：日志采集监测系统，常见的技术栈为 ELK 全家桶（Elasticsearch、Logstash、Kibana）；</li>
+<li>Metrics：常见的技术栈为 Prometheus，数据量大的时候会加上时序数据库；</li>
+<li>Tracing：常见的技术是在日志中打点 trace_id，或使用 eBPF 技术。</li>
+</ul>
+<p>本文主要将精力放在 Logs，也就是日志采集监测系统搭建这里。</p>
+<h2 id="技术选型"><a href="#技术选型" class="headerlink" title="技术选型"></a>技术选型</h2><p>前面提到，日志采集系统最常见的技术栈为 ELK 全家桶，而随着 elastic 商业性的扩大，其将项目的 license 替换为了 <a target="_blank" rel="noopener" href="https://www.elastic.co/cn/licensing/elastic-license">Elastic License</a>，能否自由地在商用软件中使用还需要仔细调研。且现在的 Kibana 默认界面启动后，会有很多需要购买 license 才能用的功能摆在界面上，让人觉得十分臃肿。</p>
+<p>从 Uber 的这篇博客（<a target="_blank" rel="noopener" href="https://eng.uber.com/logging/">Fast and Reliable Schema-Agnostic Log Analytics Platform</a>）中，我们能看到越来越多的开发者愿意将 Elasticsearch 换到性价比更高的 Clickhouse 中。因为 Elasticsearch 的维护成本实在是太高了（前公司内部 ES 集群都是部署在 SSD 上的，维护成本十分昂贵），而 Clickhouse 在<a target="_blank" rel="noopener" href="https://clickhouse.com/docs/zh/introduction/distinctive-features">介绍</a>中提到：</p>
+<blockquote>
+<p>ClickHouse被设计用于工作在传统磁盘上的系统，它提供每GB更低的存储成本，但如果可以使用SSD和内存，它也会合理的利用这些资源。ClickHouse会使用服务器上一切可用的资源，从而以最自然的方式并行处理大型查询。</p>
+</blockquote>
+<p>而 Logstash 官方并没有支持 Clickhouse 的 sink plugin，在一个开源实现（<a target="_blank" rel="noopener" href="https://github.com/funcmike/logstash-output-clickhouse">funcmike/logstash-output-clickhouse</a>）中，原作者在 readme 中提到他转到了 Vector，我是在这里才了解到 Vector 这个项目的。Vector 官方支持了 Clickhouse、Loki 等多种 sink 方式，且 Vector 具有以下特性：</p>
+<ul>
+<li>配置灵活，可以非常自由地组装日志流，复用日志流中的任意一个组件；</li>
+<li>使用 Rust 语言编写，性能有保证，错误必须被显式处理（类似于 go 的 err 编程……）；</li>
+<li>灵活的 VRL（Vector Remap Language），可以应付几乎所有日志处理的场景（例如正则匹配、常见日志格式匹配、条件判断、字段的增删改查、数值计算、字符串计算、数组处理等）；</li>
+<li>占用资源小，内存仅占用 80MB 左右，相比于 Logstash 轻量了很多；</li>
+<li>由于轻量，所以更好调试；</li>
+</ul>
+<p>综上，我们将使用 Vector + Clickhouse 来代替 Filebeat + Logstash + Elasticsearch 的方案。这里 Vector 将同时担当采集端（collector）和处理端（aggregator）的工作，其实 Logstash 也是支持采集端的配置的，但由于 Logstash 太重了，所以在采集端通常由更轻量级的 Filebeat 实现。</p>
+<p>至于 Kibana 的替换方案，我们可以使用 Grafana + <a target="_blank" rel="noopener" href="https://github.com/metrico/qryn">loki-adapter</a> 实现。</p>
+<h2 id="Vector-安装与部署方式"><a href="#Vector-安装与部署方式" class="headerlink" title="Vector 安装与部署方式"></a>Vector 安装与部署方式</h2><p>关于安装我推荐大家直接看官方的说明（<a target="_blank" rel="noopener" href="https://vector.dev/docs/setup/installation/">Install Vector</a>），这里只提供 CentOS 下的安装说明，与使用容器部署的说明。</p>
+<h3 id="systemd"><a href="#systemd" class="headerlink" title="systemd"></a>systemd</h3><p>安装：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -1sLf &#x27;https://repositories.timber.io/public/vector/cfg/setup/bash.rpm.sh&#x27; | sudo -E bash</span><br><span class="line"></span><br><span class="line">sudo yum install vector</span><br></pre></td></tr></table></figure>
+<p>配置文件在 <code>/etc/vector/vector.toml</code> 下。</p>
+<p>启动：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl start vector</span><br></pre></td></tr></table></figure>
+
+<h3 id="container"><a href="#container" class="headerlink" title="container"></a>container</h3><p>nerdctl 和 docker 都是一样的命令（注意 docker 的 -v 不能使用相对路径）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">./nerdctl run -d -h $HOSTNAME --name vector \</span><br><span class="line">-v ./vector.toml:/etc/vector/vector.toml \</span><br><span class="line">-v /var/log:/log --network=&quot;host&quot; \</span><br><span class="line">-e TZ=$(timedatectl | grep &#x27;Time zone&#x27; | awk &#x27;&#123;print $3&#125;&#x27;) \</span><br><span class="line">-p 127.0.0.1:514:514 timberio/vector:0.22.1-alpine</span><br></pre></td></tr></table></figure>
+<p>这里有几个参数需要说明：</p>
+<ul>
+<li>传入宿主机的 hostname 是因为 vector 在采集日志时，会自动带上 host 字段，如果不传入的话，就会被 container id 给取代； </li>
+<li>由于将 <code>/var/log</code> 挂载到了 <code>/log</code>，所以要注意配置文件里的路径得是容器内的路径；</li>
+<li>时区的传入也很重要，见附录；</li>
+<li>暴露 514 端口到本地是为了让宿主机上的 rsyslogd 服务能将事件传入至 vector，vector 自带 sylog 的解析功能；</li>
+</ul>
+<h2 id="Vector-功能介绍"><a href="#Vector-功能介绍" class="headerlink" title="Vector 功能介绍"></a>Vector 功能介绍</h2><p>我们直接来看 Vector 的配置文件长什么样，即可了解到它的功能：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">[sources.libvirtd]</span><br><span class="line">type = &quot;file&quot;</span><br><span class="line">include = [ &quot;/var/log/libvirtd.log&quot; ]</span><br><span class="line">read_from = &quot;beginning&quot;</span><br><span class="line">multiline.condition_pattern = &quot;^\\d&#123;4&#125;-\\d&#123;2&#125;-\\d&#123;2&#125;&quot;</span><br><span class="line">multiline.start_pattern = &quot;^\\d&#123;4&#125;-\\d&#123;2&#125;-\\d&#123;2&#125;&quot;</span><br><span class="line">multiline.mode = &quot;halt_before&quot;</span><br><span class="line">multiline.timeout_ms = 1000</span><br><span class="line"></span><br><span class="line">[transforms.remap_log_libvirtd]</span><br><span class="line">type = &quot;remap&quot;</span><br><span class="line">inputs = [&quot;libvirtd&quot;]</span><br><span class="line">source = &#x27;&#x27;&#x27;</span><br><span class="line">. |= parse_regex!(.message, r&#x27;^(?P&lt;timestamp&gt;\d&#123;4&#125;-\d&#123;2&#125;-\d&#123;2&#125; \d&#123;2&#125;:\d&#123;2&#125;:\d&#123;2&#125;.\d&#123;3&#125;\+\d&#123;4&#125;): (?P&lt;pid&gt;\d+): (?P&lt;severity&gt;\w+) : (?P&lt;caller&gt;[A-Za-z0-9_.-]+:\d+) : ((?P&lt;event&gt;\w+): )?(?P&lt;message&gt;(.|\n)*)$&#x27;)</span><br><span class="line">.timestamp = parse_timestamp!(.timestamp, &quot;%Y-%m-%d %H:%M:%S.%3f%z&quot;)</span><br><span class="line">&#x27;&#x27;&#x27;</span><br><span class="line"></span><br><span class="line">[sinks.print]</span><br><span class="line">type = &quot;console&quot;</span><br><span class="line">inputs = [&quot;remap_log_libvirtd&quot;]</span><br><span class="line">encoding.codec = &quot;json&quot;</span><br></pre></td></tr></table></figure>
+
+<p>Vector 中将日志流分为 sources、transforms、sinks：</p>
+<ul>
+<li>sources：日志来源，最常用的是 <code>file</code> 类型的日志源，如果你能确保日志都是单行的，则可不用配置 multiline，vector 还支持的源有 docker container logs、http(webhook)、metrics、kafka、logstash、syslog 等，当然了，还有 vector 自身；</li>
+<li>transforms：日志转换规则，可通过正则的方式从日志中提取字段，也可以做一些简单的计算，能覆盖大部分场景，其中最强大的是 remap 功能，类似于 lua 脚本但有更简单的语法，会由 rust interpreter 执行；</li>
+<li>sinks：日志下沉配置，支持 clickhouse、loki、es、kafka、file 等，还有 vector 自身。</li>
+</ul>
+<h3 id="sources"><a href="#sources" class="headerlink" title="sources"></a>sources</h3><p>配置需要采集的日志源，这里仅说明最常用的 file 类型日志源（<a target="_blank" rel="noopener" href="https://vector.dev/docs/reference/configuration/sources/file/#output-logs">sources/File</a>）。</p>
+<p>常用的配置项只有 <code>include</code> 和 <code>read_from</code> ：</p>
+<ul>
+<li>include：文件路径，支持通配符，例如 <code>/var/log/**/*.log</code> ；</li>
+<li>read_from：默认为 begginning，从文件头开始读取，若配置为 end，则会从最后一行开始监听，监听文件的 checkpoint 记录默认存放在 <code>/var/lib/vector/source_id</code> 路径下，若想删除文件读取记录让 vector 从头开始读取文件，删除该路径下的数据即可。</li>
+</ul>
+<p>我们可以在中看到这个组件的输出格式：一共四个字段：</p>
+<ul>
+<li>file（文件路径）</li>
+<li>host（主机名，所以前面提到容器启动时需要传入 hostname）</li>
+<li>message（日志行）</li>
+<li>timestamp（采集时间，不是日志时间）</li>
+</ul>
+<h3 id="transforms"><a href="#transforms" class="headerlink" title="transforms"></a>transforms</h3><p>而 transforms 的功能就是为了处理来自 sources 的事件，通过配置 inputs 来指定需要收到的数据流，inputs 里当然也可以放其他的 transform_id 来自由组装日志流。</p>
+<p>而 transforms 的类型有很多，但官网似乎为了精简功能，将大部分 transforms 都隐藏了，能被 remap transform 实现的就不展示了，但类似于很简单的添加字段、删除字段这些需求，是没必要使用到 remap 的（remap 会启动一个 rust interpreter，在性能上可能会比使用简单的 transforms 来的低）。</p>
+<p>在日志处理中，我们常用的组件会有：remap, filter, route, add_fileds, remove_fields 等。remap 即可满足几乎所有的需求：<a target="_blank" rel="noopener" href="https://vector.dev/docs/reference/vrl/%EF%BC%8C%E4%BD%86%E5%A6%82%E6%9E%9C%E5%8F%AA%E6%98%AF%E4%B8%BA%E4%BA%86%E4%BD%BF%E7%94%A8%E7%AE%80%E5%8D%95%E7%9A%84%E6%B7%BB%E5%8A%A0%E3%80%81%E5%88%A0%E9%99%A4%E5%AD%97%E6%AE%B5%EF%BC%8C%E5%8F%AF%E4%BD%BF%E7%94%A8%E8%A2%AB%E5%AE%98%E7%BD%91%E9%9A%90%E8%97%8F%E8%B5%B7%E6%9D%A5%E7%9A%84">https://vector.dev/docs/reference/vrl/，但如果只是为了使用简单的添加、删除字段，可使用被官网隐藏起来的</a> transforms: <a target="_blank" rel="noopener" href="https://assume-role-docs--vector-project.netlify.app/docs/reference/transforms/add_fields/">https://assume-role-docs--vector-project.netlify.app/docs/reference/transforms/add_fields/</a></p>
+<p>在 <code>parse_timestamp</code> 的过程中，vector 会根据当前时区做转换，详见附录。</p>
+<h3 id="sinks"><a href="#sinks" class="headerlink" title="sinks"></a>sinks</h3><p>将日志下沉到某个地方，这里以 clickhouse 为例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[sinks.my_sink_id]</span><br><span class="line">type = &quot;clickhouse&quot;</span><br><span class="line">inputs = [ &quot;my-source-or-transform-id&quot; ]</span><br><span class="line">database = &quot;mydatabase&quot;</span><br><span class="line">endpoint = &quot;http://localhost:8123&quot;</span><br><span class="line">table = &quot;mytable&quot;</span><br><span class="line">compression = &quot;gzip&quot;</span><br><span class="line">skip_unknown_fields = true</span><br></pre></td></tr></table></figure>
+<p>这样就可以把数据写入 Clickhouse 了，在 sink 中常用的配置项可能是 <code>acknowledgements.enabled=true</code> 当这条开启后，只有日志下沉成功了，日志才表示上传成功（否则日志会停留在 sources 被标记为发送失败，会重试发送）。</p>
+<h2 id="数据存储与查询"><a href="#数据存储与查询" class="headerlink" title="数据存储与查询"></a>数据存储与查询</h2><p>我们使用 Clickhouse 做为数据存储，建表语句通常如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> IF <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> logs.libvirtd (</span><br><span class="line">    host String,</span><br><span class="line">    service String,</span><br><span class="line">    cluster_uuid String,</span><br><span class="line">    host_uuid String,</span><br><span class="line">    file String,</span><br><span class="line">    message String,</span><br><span class="line">    <span class="type">time</span> DateTime,</span><br><span class="line">    severity String,</span><br><span class="line">    pid UInt32,</span><br><span class="line">    caller String,</span><br><span class="line">    event String</span><br><span class="line">)</span><br><span class="line">ENGINE <span class="operator">=</span> MergeTree()</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> <span class="type">time</span>;</span><br></pre></td></tr></table></figure>
+
+<p>其中 DateTime 只支持到秒级，所以前面的 remap 中还需要添加 <code>.time = format_timestamp!(.timestamp, &quot;%Y-%m-%d %H:%M:%S)&quot;</code> 若要支持到更细精度的，可使用 DateTime64 存储。</p>
+<p>到这里，整条日志流应该就可以运行起来了，也可以通过 Grafana 配置 Clickhouse DataSource 来查询日志，但效果还是差了些，不如 Grafana 的亲儿子 Loki 能做到类似于 Kibana 的查询效果。</p>
+<p>有没有什么办法是可以既用到 Grafana Loki 的能力，又使用 Clickhouse 进行存储呢？我们可以使用 GitHub 上的这个组件：<a target="_blank" rel="noopener" href="https://github.com/metrico/qryn">https://github.com/metrico/qryn</a></p>
+<p>启用这个组件后，在 Vector 中将 sinks 改为 <code>type=&quot;loki&quot;</code> 并配置需要写入的 labels，即可达到上面的目的，从而使用 Grafana + Clickhouse 的技术栈达到 Kibana 查询日志的使用体验。</p>
+<h2 id="基于日志的报警"><a href="#基于日志的报警" class="headerlink" title="基于日志的报警"></a>基于日志的报警</h2><p>这一步其实也很简单，通过使用 Alertmanager，我们将报警发送到它的 Webhook，即可实现基于日志的报警。</p>
+<p>这里我们首先在日志流中加入 filter 组件，将需要报警的日志筛选出来：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[transforms.filter_event_udev]</span><br><span class="line">type = &quot;filter&quot;</span><br><span class="line">inputs = [&quot;remap_log_udev&quot;]</span><br><span class="line">condition = &#x27;!is_empty(.event) ?? false&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>然后将日志重组为 webhook 需要的 json 格式：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">[transforms.remap_alert_udev]</span><br><span class="line">type = &quot;remap&quot;</span><br><span class="line">inputs = [&quot;filter_event_udev&quot;]</span><br><span class="line">source = &#x27;&#x27;&#x27;</span><br><span class="line">. = &#123;</span><br><span class="line">    &quot;startsAt&quot;: .happen_time,</span><br><span class="line">    &quot;labels&quot;: &#123;</span><br><span class="line">        &quot;hostname&quot;: .hostname,</span><br><span class="line">        &quot;device&quot;: .data.pass_through_name,</span><br><span class="line">        &quot;created_time&quot;: .timestamp,</span><br><span class="line">        &quot;event&quot;: downcase!(.name),</span><br><span class="line">        &quot;service&quot;: &quot;udev&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">if (.labels.event == &quot;add_device&quot;) &#123;</span><br><span class="line">    .labels.alertname = &quot;event_add_device&quot;</span><br><span class="line">    .labels.severity = &quot;info&quot;</span><br><span class="line">&#125; else if (.labels.event == &quot;remove_device&quot;) &#123;</span><br><span class="line">    .labels.alertname = &quot;event_remove_device&quot;</span><br><span class="line">    .labels.severity = &quot;critical&quot;</span><br><span class="line">&#125;</span><br><span class="line">&#x27;&#x27;&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>最后通过 <code>http sink</code> 的能力发送出去即可：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[sinks.alertmanager]</span><br><span class="line">type = &quot;http&quot;</span><br><span class="line">inputs = [&quot;remap_alert_*&quot;]</span><br><span class="line">uri = &quot;http://alertmanager:9093/api/v2/alerts&quot;</span><br><span class="line">compression = &quot;none&quot;</span><br><span class="line">encoding.codec = &quot;json&quot;</span><br><span class="line">acknowledgements.enabled = true</span><br></pre></td></tr></table></figure>
+
+<h2 id="将-Vector-拆分为-Collector-和-Aggregator"><a href="#将-Vector-拆分为-Collector-和-Aggregator" class="headerlink" title="将 Vector 拆分为 Collector 和 Aggregator"></a>将 Vector 拆分为 Collector 和 Aggregator</h2><p>在实际场景中，我们通常将 sources 单独放在主机上，然后配置 <code>sinks.vector</code> 将所有采集的日志发送到一个单独的 vector 实例（aggregator）上。</p>
+<p>通过 <code>transforms.add_fields</code>  和 <code>transforms.route</code> 来实现，首先，我们在 collector 端配置 sources，并在每个 sources 后面跟着一个 <code>transforms.add_fields</code> 来标记这条日志是由什么服务产生的，并下沉到 vector aggregator 实例上：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[sources.nginx_access]</span><br><span class="line">type = &quot;file&quot;</span><br><span class="line">include = [ &quot;/log/nginx/access.log&quot; ]</span><br><span class="line">read_from = &quot;end&quot;</span><br><span class="line"></span><br><span class="line">[transforms._nginx_access]</span><br><span class="line">type = &quot;add_fields&quot;</span><br><span class="line">inputs = [&quot;nginx_access&quot;]</span><br><span class="line">fields.service = &quot;nginx_access&quot;</span><br><span class="line"></span><br><span class="line">[sinks.vector]</span><br><span class="line">type = &quot;vector&quot;</span><br><span class="line">inputs = [&quot;_*&quot;]</span><br><span class="line">address = &quot;192.168.xxx.xxx:8687&quot;</span><br><span class="line">acknowledgements.enabled = true</span><br></pre></td></tr></table></figure>
+
+<p>同时需要在 aggregator 上配置 <code>sources.vector</code> 并开放监听端口，然后使用 <code>transforms.route</code> 将日志路由到不同监听组件的 inputs 下，这样在接下来的组件中就可以通过 <code>inputs = [&quot;router.xxx&quot;]</code> 的形式处理不同服务的日志了：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">[sources.vector]</span><br><span class="line">type = &quot;vector&quot;</span><br><span class="line">address = &quot;0.0.0.0:8687&quot;</span><br><span class="line"></span><br><span class="line">[transforms.router]</span><br><span class="line">type = &quot;route&quot;</span><br><span class="line">inputs = [&quot;vector&quot;]</span><br><span class="line">route.nginx = &#x27;.service == &quot;nginx_access&quot;&#x27;</span><br><span class="line"></span><br><span class="line">[transforms.remap_log_nginx_access]</span><br><span class="line">type = &quot;remap&quot;</span><br><span class="line">inputs = [&quot;router.nginx&quot;]</span><br><span class="line">source = &#x27;&#x27;&#x27;</span><br><span class="line">.severity = &quot;info&quot;</span><br><span class="line">. |= parse_nginx_log!(.message, &quot;combined&quot;)</span><br><span class="line">&#x27;&#x27;&#x27;</span><br><span class="line"></span><br><span class="line">[sinks.loki]</span><br><span class="line">type = &quot;loki&quot;</span><br><span class="line">inputs = [&quot;remap_log_*&quot;]</span><br><span class="line">endpoint = &quot;http://loki-adapter:3100&quot;</span><br><span class="line">compression = &quot;none&quot;</span><br><span class="line">encoding.codec = &quot;json&quot;</span><br><span class="line">remove_label_fields = true</span><br><span class="line">acknowledgements.enabled = true</span><br><span class="line"></span><br><span class="line">[sinks.loki.labels]</span><br><span class="line">host = &quot;&#123;&#123; host &#125;&#125;&quot;</span><br><span class="line">severity = &quot;&#123;&#123; severity &#125;&#125;&quot;</span><br><span class="line">service = &quot;&#123;&#123; service &#125;&#125;&quot;</span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>Vector 中文参考资料还是比较少的，但好在官网文档说明已经很全面了，做为一个日志流处理工具，它是一把瑞士军刀，已经被 Datadog 收购，结合 Clickhouse，相信很快会在国内各大厂看到它的身影。</p>
+<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><h3 id="日志的时区问题"><a href="#日志的时区问题" class="headerlink" title="日志的时区问题"></a>日志的时区问题</h3><p>在日志流中，时区问题通常是比较棘手的，不同的服务记录的日志格式各不相同，时间也通常有如下几种形式，以北京时间 UTC+8 为例，日志时间可能是：</p>
+<ul>
+<li>UTC+8 的时间，不带时区信息；</li>
+<li>UTC+8 的时间，且带时区信息；</li>
+<li>UTC 时间，带时区信息；<br>如果不妥善处理，查询出来的日志可能会有提前八小时或推后八小时的情况出现。</li>
+</ul>
+<p>而在 Vector 中，对 timestamp 的处理我们都是通过正则匹配后，由 <code>parse_timestamp</code> 函数解决的，该函数在传入的时间不带时区信息的情况下，会将时间转换为当前时区，也就是说为了正确处理时区问题，我们要将所有时间正确地转换为 UTC 时间戳并交由 Vector 处理时区。</p>
+<p>只消稍微琢磨一下，就知道处理方式了：将 Vector 实例设置为正确的时区（collector 和 aggregator 都要）、并在 <code>parse_timestamp</code> 时尽可能传入时区信息即可。</p>
+<h3 id="Vector-监测与调试方法"><a href="#Vector-监测与调试方法" class="headerlink" title="Vector 监测与调试方法"></a>Vector 监测与调试方法</h3><p>在 Vector 的配置文件中，可以通过配置开启 API（默认监听端口为 8686）来启动 vector api，然后就可以通过 vector top 来观察每个组件的 Events In、Events Out、Errors 等信息了，能够知道自己的日志处理中是否有出错的地方，可以通过 Vector 的日志看到 transforms 出错的原因。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[api]</span><br><span class="line">enabled = true</span><br></pre></td></tr></table></figure>
+
+<h3 id="配置文件过多的解决办法"><a href="#配置文件过多的解决办法" class="headerlink" title="配置文件过多的解决办法"></a>配置文件过多的解决办法</h3><p>如果采集的日志过多，配置文件也可能越来越复杂，Vector 在启动时可通过 <code>-C, --config-dir</code> 的方式扫描一个文件夹下的所有配置文件，并自行组装，这样一来我们就可以将每个服务的配置单独放到一个文件里。</p>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://www.dynatrace.com/news/blog/what-is-observability-2/">What is observability? Not just logs, metrics and traces</a></li>
+<li><a target="_blank" rel="noopener" href="https://eng.uber.com/logging/" title="Fast and Reliable Schema-Agnostic Log Analytics Platform">Fast and Reliable Schema-Agnostic Log Analytics Platform</a></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://mingfei.buzz/%E3%80%8A%E8%9B%A4%E8%9F%86%E5%85%88%E7%94%9F%E5%8E%BB%E7%9C%8B%E5%BF%83%E7%90%86%E5%8C%BB%E7%94%9F%E3%80%8B%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/red-maple-leaf.png">
+      <meta itemprop="name" content="Todd Gao">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mingfei.buzz v1.0.1">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/%E3%80%8A%E8%9B%A4%E8%9F%86%E5%85%88%E7%94%9F%E5%8E%BB%E7%9C%8B%E5%BF%83%E7%90%86%E5%8C%BB%E7%94%9F%E3%80%8B%E7%AC%94%E8%AE%B0/" class="post-title-link" itemprop="url">《蛤蟆先生去看心理医生》笔记</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2022-04-16 17:23:14 / Modified: 17:28:08" itemprop="dateCreated datePublished" datetime="2022-04-16T17:23:14+08:00">2022-04-16</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="读后感"><a href="#读后感" class="headerlink" title="读后感"></a>读后感</h2><p>这本书是前任安利给我的，他说他看了这本书后对自己有了新的认识，生活的态度也发生了很大的转变，于是我也想来读一读。</p>
+<p>书中说到，一个人的想法和行为会处于下列三种状态之一：儿童自我状态、成人自我状态、父母自我状态。而这本书很大篇幅都在讨论儿童自我状态，这也是大部分“无法控制情绪”的人处在的一个状态。</p>
+<blockquote>
+<p>“人们进入儿童状态后，他们的感受和行为都和小时候的自己如出一辙，与实际年龄并没有关系。”<br>“只有在成人自我状态里，才能学到关于自我的新知识。”<br>“当你处在父母状态时，基本上你不是在挑剔就是在教育别人。”  </p>
+</blockquote>
+<p>这本书有很大一部分都在讨论原生家庭对一个人的想法、行为的影响，当你认真回想幼年时期发生的事情，那些你可能觉得没什么大不了的事情反而是造就你现在性格的关键。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/%E3%80%8A%E8%9B%A4%E8%9F%86%E5%85%88%E7%94%9F%E5%8E%BB%E7%9C%8B%E5%BF%83%E7%90%86%E5%8C%BB%E7%94%9F%E3%80%8B%E7%AC%94%E8%AE%B0/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://mingfei.buzz/2021-summary/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/red-maple-leaf.png">
+      <meta itemprop="name" content="Todd Gao">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mingfei.buzz v1.0.1">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021-summary/" class="post-title-link" itemprop="url">2021 年度总结</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2022-01-04 16:26:42 / Modified: 16:31:01" itemprop="dateCreated datePublished" datetime="2022-01-04T16:26:42+08:00">2022-01-04</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="时间点"><a href="#时间点" class="headerlink" title="时间点"></a>时间点</h2><p>先来说几个今年的时间点：</p>
+<ul>
+<li>1月18日 寒假回家</li>
+<li>3月16日 被实验室派去福州出差</li>
+<li>5月25日 回京</li>
+<li>7月5日 面试 SmartX</li>
+<li>7月19日 入职 SmartX 实习生</li>
+<li>10月11日 SmartX Offer</li>
+</ul>
+<h2 id="今年看了哪些书"><a href="#今年看了哪些书" class="headerlink" title="今年看了哪些书"></a>今年看了哪些书</h2><p>今年看的书不多，也几乎没有看村上春树的小说，只记得重启了好多次《1Q84》但还是没能坚持看下去，可能是因为自己看不懂那层隐喻，且剧情又不够科幻导致的。科幻小说尝试过《星之继承者》和《银河帝国》，也没有坚持看下去。觉得自己真是缺乏坚持的能力。以下是今年尝试看过的书（或网课）：</p>
+<p>小说类：</p>
+<ul>
+<li>1Q84</li>
+<li>星之继承者</li>
+<li>银河帝国</li>
+<li>动物庄园</li>
+<li>直到世界尽头</li>
+<li>败者为王</li>
+</ul>
+<p>技术类：</p>
+<ul>
+<li>MIT 6.824</li>
+<li>Redis 设计与实现</li>
+<li>高性能 MySQL</li>
+<li>正则表达式必知必会</li>
+<li>SQL 必知必会</li>
+<li>深入浅出 Prometheus</li>
+<li>Kubernetes in Action</li>
+<li>极客时间：Linux 性能优化实战</li>
+<li>深度实践 KVM</li>
+<li>SRE：Google 运维解密</li>
+<li>深入剖析 Kubernetes</li>
+<li>DDIA</li>
+<li>博客：网络基本功系列</li>
+<li>100 Go Mistakes</li>
+</ul>
+<p>工具类：</p>
+<ul>
+<li>零挫败感人生</li>
+<li>富爸爸穷爸爸</li>
+<li>亲密关系</li>
+<li>现代西班牙语</li>
+<li>睡眠革命</li>
+<li>刻意练习</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021-summary/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://mingfei.buzz/vm-io-slow-cause-emergency-mode/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/red-maple-leaf.png">
+      <meta itemprop="name" content="Todd Gao">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mingfei.buzz v1.0.1">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/vm-io-slow-cause-emergency-mode/" class="post-title-link" itemprop="url">虚拟机 IO 慢速导致挂载超时进入 emergency mode 问题排查</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-08-15 15:45:16" itemprop="dateCreated datePublished" datetime="2021-08-15T15:45:16+08:00">2021-08-15</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2022-01-04 16:30:05" itemprop="dateModified" datetime="2022-01-04T16:30:05+08:00">2022-01-04</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h1><p>最近遇到一个问题， 在虚拟机部署的集群上，再套娃一个虚拟机，导致 fstab 中挂载 xfs 设备超时，原因是 boot 分区被 udev 扫描时 IO 太慢导致超时，所以每次开机都会进入 emergency mode, 需要按下 Ctrl + D 才能继续。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/vm-io-slow-cause-emergency-mode/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Todd Gao</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"Bingmang","repo":"hexo-gitalk-issues","client_id":"ede5352546943bb89615","client_secret":"010fec71f7c3eb41c545292b79235bb5001aec7e","admin_user":"Bingmang","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":null,"js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"d1546d731a9f30cc80127d57142a482b"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>
