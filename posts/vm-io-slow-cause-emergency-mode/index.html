@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Montserrat:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"bingmang.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"always","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"tomorrow-night-bright"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="起因最近遇到一个问题， 在虚拟机部署的集群上，再套娃一个虚拟机，导致 fstab 中挂载 xfs 设备超时，原因是 boot 分区被 udev 扫描时 IO 太慢导致超时，所以每次开机都会进入 emergency mode, 需要按下 Ctrl + D 才能继续。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="虚拟机 IO 慢速导致挂载超时进入 emergency mode 问题排查">
+<meta property="og:url" content="https://bingmang.github.io/posts/vm-io-slow-cause-emergency-mode/index.html">
+<meta property="og:site_name" content="Mingfei&#39;s Blog">
+<meta property="og:description" content="起因最近遇到一个问题， 在虚拟机部署的集群上，再套娃一个虚拟机，导致 fstab 中挂载 xfs 设备超时，原因是 boot 分区被 udev 扫描时 IO 太慢导致超时，所以每次开机都会进入 emergency mode, 需要按下 Ctrl + D 才能继续。">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-08-15T07:45:16.000Z">
+<meta property="article:modified_time" content="2025-12-16T11:51:18.145Z">
+<meta property="article:author" content="Finn Gao">
+<meta property="article:tag" content="linux">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://bingmang.github.io/posts/vm-io-slow-cause-emergency-mode/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://bingmang.github.io/posts/vm-io-slow-cause-emergency-mode/","path":"/posts/vm-io-slow-cause-emergency-mode/","title":"虚拟机 IO 慢速导致挂载超时进入 emergency mode 问题排查"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>虚拟机 IO 慢速导致挂载超时进入 emergency mode 问题排查 | Mingfei's Blog</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="Mingfei's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Mingfei's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Don't panic.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li><li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>Sitemap</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%B5%B7%E5%9B%A0"><span class="nav-number">1.</span> <span class="nav-text">起因</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B0%9D%E8%AF%95%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-number">2.</span> <span class="nav-text">尝试的解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#fstab-%E6%B7%BB%E5%8A%A0-x-systemd-mount-timeout"><span class="nav-number">2.1.</span> <span class="nav-text">fstab 添加 x-systemd.mount-timeout</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#fstab-%E6%B7%BB%E5%8A%A0-nofail-x-systemd-device-timeout-1ms"><span class="nav-number">2.2.</span> <span class="nav-text">fstab 添加 nofail,x-systemd.device-timeout&#x3D;1ms</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#fstab-%E6%B7%BB%E5%8A%A0-netdev"><span class="nav-number">2.3.</span> <span class="nav-text">fstab 添加 _netdev</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%9D%E8%AF%95-nofail-x-systemd-device-timeout-0"><span class="nav-number">2.4.</span> <span class="nav-text">尝试 nofail, x-systemd.device-timeout&#x3D;0</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">2.5.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99"><span class="nav-number">3.</span> <span class="nav-text">学习资料</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Finn Gao"
+      src="/images/red-maple-leaf.png">
+  <p class="site-author-name" itemprop="name">Finn Gao</p>
+  <div class="site-description" itemprop="description">Live in the moment. AOW / SRE / Observability / AI Agents 🧘‍♂️🏃‍♂️🎮🤿</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/bingmang" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;bingmang" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:ustbbingmang@gmail.com" title="E-Mail → mailto:ustbbingmang@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/open0slo" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;open0slo" rel="noopener me" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="RSS → &#x2F;atom.xml" rel="noopener me"><i class="fa fa-rss fa-fw"></i>RSS</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://bingmang.github.io/posts/vm-io-slow-cause-emergency-mode/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/red-maple-leaf.png">
+      <meta itemprop="name" content="Finn Gao">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mingfei's Blog">
+      <meta itemprop="description" content="Live in the moment. AOW / SRE / Observability / AI Agents 🧘‍♂️🏃‍♂️🎮🤿">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="虚拟机 IO 慢速导致挂载超时进入 emergency mode 问题排查 | Mingfei's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          虚拟机 IO 慢速导致挂载超时进入 emergency mode 问题排查
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-08-15 15:45:16" itemprop="dateCreated datePublished" datetime="2021-08-15T15:45:16+08:00">2021-08-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2025-12-16 19:51:18" itemprop="dateModified" datetime="2025-12-16T19:51:18+08:00">2025-12-16</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">Views: </span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h1><p>最近遇到一个问题， 在虚拟机部署的集群上，再套娃一个虚拟机，导致 fstab 中挂载 xfs 设备超时，原因是 boot 分区被 udev 扫描时 IO 太慢导致超时，所以每次开机都会进入 emergency mode, 需要按下 Ctrl + D 才能继续。</p>
+<span id="more"></span>
+
+<p>首先看一下 fstab 的配置：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">UUID=/dev/mapper/centos-root /                       xfs     defaults        0 0</span><br><span class="line">UUID=9a8652ca-8fa7-4c8a-9345-ea3ed07beaa8 /boot                   xfs     defaults        0 0</span><br></pre></td></tr></table></figure>
+
+<p>报错信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ journalctl -u boot.mount</span><br><span class="line"></span><br><span class="line">-- Reboot --</span><br><span class="line">Aug 15 16:33:50 localhost.localdomain systemd[1]: Dependency failed for /boot.</span><br><span class="line">Aug 15 16:33:50 localhost.localdomain systemd[1]: Job boot.mount/start failed with result &#x27;dependency&#x27;.</span><br><span class="line">Aug 15 16:34:41 localhost.localdomain systemd[1]: Mounting /boot...</span><br><span class="line">Aug 15 16:35:13 localhost.localdomain systemd[1]: Mounted /boot.</span><br></pre></td></tr></table></figure>
+
+<h1 id="尝试的解决方案"><a href="#尝试的解决方案" class="headerlink" title="尝试的解决方案"></a>尝试的解决方案</h1><h2 id="fstab-添加-x-systemd-mount-timeout"><a href="#fstab-添加-x-systemd-mount-timeout" class="headerlink" title="fstab 添加 x-systemd.mount-timeout"></a>fstab 添加 x-systemd.mount-timeout</h2><p>最开始以为是挂载超时的问题，挂载默认的超时时间是 90 秒，如果比这个时间多，就会挂载失败进入 emergency mode, 所以尝试通过添加该参数：</p>
+<p><code>x-systemd.mount-timeout</code> 是后来才被支持的，需要先看一下系统的 <code>systemd</code> 是否支持该参数：</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/eworm-de/systemd/commit/9a94ff15c46a3d0c966b8972dbd525cbbdac8b03">https://github.com/eworm-de/systemd/commit/9a94ff15c46a3d0c966b8972dbd525cbbdac8b03</a></p>
+<p>查看的方式很简单，通过 <code>man systemd.mount</code> 查看是否有该参数，没有的话就是不支持。</p>
+<p>不支持的话可以通过第二种方式设定（假设当前挂载盘为 boot）：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p /etc/systemd/system/boot.mount.d</span><br><span class="line"><span class="built_in">cat</span> &lt;&lt;<span class="string">EOF &gt; /etc/systemd/system/boot.mount.d/timeout.conf</span></span><br><span class="line"><span class="string">[Mount]</span></span><br><span class="line"><span class="string">TimeoutSec=600</span></span><br><span class="line"><span class="string">EOF</span></span><br></pre></td></tr></table></figure>
+
+<p>设定可接受的超市时间为 10 分钟后，reboot 后发现还是一样的问题，我们也可以从上面的日志看到并不是 mount 过程发生了超时，而是 <code>Dependency failed for /boot</code>，这里的 dependency 到底指什么呢？</p>
+<p>首先尝试将 udevadm 的 log level 调整为 info:</p>
+<p><code>udevadm control --log-priority=info</code> 只会临时作用于当前正在运行的 <code>udevd</code>, 如果要永久更改需要修改 <code>/etc/udev/udev.conf</code> 文件。</p>
+<p>然后重启后 <code>journalctl -xb</code>  查看系统启动日志，可以发现 udev 是在 kernel 启动后才加载的，因为 udev 是运行在用户态的，但是在这里好像没有发现关于 udev 的什么异常信息，倒是看到了 lvm 的 warning:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Aug 15 16:32:47 localhost lvm: WARNING: Device /dev/vda1 not initialized in udev database even after waiting 10000000 microseconds.</span><br><span class="line">Aug 15 16:33:29 localhost lvm: WARNING: Device /dev/vda1 not initialized in udev database even after waiting 10000000 microseconds.</span><br><span class="line">Aug 15 16:34:23 localhost lvm: WARNING: Device /dev/vda1 not initialized in udev database even after waiting 10000000 microseconds.</span><br></pre></td></tr></table></figure>
+
+<p>到这里就没下文了，暂时不知道超时的点到底发生在哪里，所以只能通过其他方式绕开了。</p>
+<h2 id="fstab-添加-nofail-x-systemd-device-timeout-1ms"><a href="#fstab-添加-nofail-x-systemd-device-timeout-1ms" class="headerlink" title="fstab 添加 nofail,x-systemd.device-timeout&#x3D;1ms"></a>fstab 添加 nofail,x-systemd.device-timeout&#x3D;1ms</h2><p>首先看一下  <a target="_blank" rel="noopener" href="https://wiki.archlinux.org/title/fstab">fstab - ArchWiki (archlinux.org)</a>  中的描述：</p>
+<blockquote>
+<p>External devices that are to be mounted when present but ignored if absent may require the nofail option. This prevents errors being reported at boot. The nofail option is best combined with the x-systemd.device-timeout option. This is because the default device timeout is 90 seconds, so a disconnected external device with only nofail will make your boot take 90 seconds longer, unless you reconfigure the timeout as shown. Make sure not to set the timeout to 0, as this translates to infinite timeout.</p>
+</blockquote>
+<p>nofail 可以让系统启动时无视挂载异常，<code>x-systemd.device-timeout</code> 参数会决定等待的时间，默认为 90 秒，也就是说当挂载异常时整个挂载过程仍会持续 90 秒，所以当配合该参数 1ms 使用后，相当于挂载操作变为异步，当该参数为 0 时，表示挂载操作为阻塞，直到成功。</p>
+<p>当修改为这个参数后，reboot 后不再进入 emergency mode, 但系统启动后的一段时间内，<code>df -h</code> 是看不到想挂载的分区 <code>/boot</code> 的，要等待一段时间才会出现，查看相关日志：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ journalctl -u boot.mount</span><br><span class="line"></span><br><span class="line">-- Reboot --</span><br><span class="line">Aug 15 17:29:43 localhost.localdomain systemd[1]: Mounting /boot...</span><br><span class="line">Aug 15 17:29:53 localhost.localdomain systemd[1]: Mounted /boot.</span><br><span class="line"></span><br><span class="line">$ cat /var/log/messages | grep udev</span><br><span class="line"></span><br><span class="line">Aug 15 17:27:50 localhost lvm: WARNING: Device /dev/vda1 not initialized in udev database even after waiting 10000000 microseconds.</span><br><span class="line">Aug 15 17:28:31 localhost lvm: WARNING: Device /dev/vda1 not initialized in udev database even after waiting 10000000 microseconds.</span><br><span class="line">Aug 15 17:29:31 localhost container-storage-setup: WARNING: Device /dev/vda1 not initialized in udev database even after waiting 10000000 microseconds.</span><br></pre></td></tr></table></figure>
+
+<p>比普通情况下少了 dependency failed 的相关日志。</p>
+<h2 id="fstab-添加-netdev"><a href="#fstab-添加-netdev" class="headerlink" title="fstab 添加 _netdev"></a>fstab 添加 _netdev</h2><p>该参数出现在 “Tips and tricks” 一节中，先看一下描述：</p>
+<blockquote>
+<p>The same applies to remote filesystem mounts. If you want them to be mounted only upon access, you will need to use the noauto,x-systemd.automount parameters. In addition, you can use the x-systemd.mount-timeout&#x3D; option to specify how long systemd should wait for the mount command to finish. Also, the _netdev option ensures systemd understands that the mount is network dependent and order it after the network is online.</p>
+</blockquote>
+<p>该参数告诉 systemd 这是一个网络设备，当系统网络可用时才会被挂载，那么具体行为是什么样的呢？</p>
+<p><a target="_blank" rel="noopener" href="http://codingberg.com/linux/systemd_when_to_use_netdev_mount_option">Systemd: When to use _netdev mount option? | Codingberg</a></p>
+<p>从上面的博客中了解到，一般是 nfs 会用到，但其实不用明确指定这个参数，因为 systemd 会自动检测文件系统类型是否需要网络。</p>
+<p>添加了该参数以后，行为和添加 <code>nofail,x-systemd.device-timeout=1ms</code> 一致。</p>
+<h2 id="尝试-nofail-x-systemd-device-timeout-0"><a href="#尝试-nofail-x-systemd-device-timeout-0" class="headerlink" title="尝试 nofail, x-systemd.device-timeout&#x3D;0"></a>尝试 nofail, x-systemd.device-timeout&#x3D;0</h2><p>fstab 文档中提到不要把这个参数设为 0，否则会永远等待下去，但我期望的就是忽视错误，并且在成功挂载后再启动系统，如果无法启动，则代表该盘不可用，这是我期望的目标，所以就想看一下设置为 0 的效果是什么样的：</p>
+<p>相比于 <code>x-systemd.device-timeout=1ms</code>，系统启动后能马上看到 <code>/boot</code> 分区，符合预期。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>由于嵌套虚拟机的 IO 较慢，在 mount 较大的虚拟卷时 IO 时间过长导致开机进入了 Emergency Mode, 通过修改 fstab 的挂载行为 <code>nofail,x-systemd.device-timeout=0</code> 解决了该问题。</p>
+<p>虽然得到了预期的结果，但仍然没找到根源超时发生在什么地方，这个 “dependency” 到底是什么呢？上班后问问 mentor 吧。</p>
+<h1 id="学习资料"><a href="#学习资料" class="headerlink" title="学习资料"></a>学习资料</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/XFS">XFS</a> : CentOS 7.0 用于替代 ext4 的日至文件系统，相较于 ext4 更好地支持大文件，更高效支持并行 IO 操作；</li>
+<li><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/Udev">udev </a> :  Linux kernel 设备管理器，用于动态管理 &#x2F;dev 目录底下的设备节点；</li>
+<li><a target="_blank" rel="noopener" href="https://wiki.archlinux.org/title/fstab">fstab - ArchWiki</a></li>
+<li><a target="_blank" rel="noopener" href="http://cn.linux.vbird.org/linux_basic/0420quota_3.php">鸟哥的 Linux 私房菜 — Quota, Software RAID, LVM, iSCSI</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="followme">
+  <span>Welcome to my other publishing channels</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+          <a target="_blank" class="social-link" href="https://twitter.com/open0slo">
+            <span class="icon">
+              <i class="fab fa-twitter"></i>
+            </span>
+
+            <span class="label">Twitter</span>
+          </a>
+      </div>
+
+      <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+      </div>
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/linux/" rel="tag"># linux</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/2021-summary/" rel="next" title="2021 年度总结">
+                  2021 年度总结 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  <div class="comments disqusjs-container">
+    <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+  </div>
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Finn Gao</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/disqusjs@3.1.0/dist/browser/styles/disqusjs.css" integrity="sha256-E4RzceSomICFY1PT/yDQrN8DsLSwdScDEiQAevHabp0=" crossorigin="anonymous">
+
+<script class="next-config" data-name="disqusjs" type="application/json">{"enable":true,"api":null,"apikey":"4BbobWwa0gpnTOjZKVCYqE7VVRAvHfEgEUVPFgUkmBI9siaKnhl5UU0trxpNWMZG","shortname":"Finn","js":{"url":"https://cdn.jsdelivr.net/npm/disqusjs@3.1.0/dist/browser/disqusjs.es2015.umd.min.js","integrity":"sha256-gdbBT62HLzqWTnXQED3WQL/ItFCuWsA5gd6dM/wgdiE="}}</script>
+<script src="/js/third-party/comments/disqusjs.js" defer></script>
+
+</body>
+</html>

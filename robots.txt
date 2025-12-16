@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Allow: /archives/
+Allow: /tags/
+Allow: /about/
+Disallow: /js/
+Disallow: /css/
+
+Sitemap: https://bingmang.github.io/sitemap.xml
+Sitemap: https://bingmang.github.io/baidusitemap.xml
+
+

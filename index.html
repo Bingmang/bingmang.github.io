@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Montserrat:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"bingmang.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"always","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"tomorrow-night-bright"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="Live in the moment. AOW &#x2F; SRE &#x2F; Observability &#x2F; AI Agents 🧘‍♂️🏃‍♂️🎮🤿">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Mingfei&#39;s Blog">
+<meta property="og:url" content="https://bingmang.github.io/index.html">
+<meta property="og:site_name" content="Mingfei&#39;s Blog">
+<meta property="og:description" content="Live in the moment. AOW &#x2F; SRE &#x2F; Observability &#x2F; AI Agents 🧘‍♂️🏃‍♂️🎮🤿">
+<meta property="og:locale" content="en_US">
+<meta property="article:author" content="Finn Gao">
+<meta property="article:tag" content="SRE,运维,技术博客,DevOps,系统架构,监控,日志,健身,旅行,心理学,AI,Agent">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://bingmang.github.io/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":true,"isPost":false,"lang":"en","comments":"","permalink":"","path":"index.html","title":""}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Mingfei's Blog - Don't panic.</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="Mingfei's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Mingfei's Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Don't panic.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li><li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>Sitemap</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Finn Gao"
+      src="/images/red-maple-leaf.png">
+  <p class="site-author-name" itemprop="name">Finn Gao</p>
+  <div class="site-description" itemprop="description">Live in the moment. AOW / SRE / Observability / AI Agents 🧘‍♂️🏃‍♂️🎮🤿</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/bingmang" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;bingmang" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:ustbbingmang@gmail.com" title="E-Mail → mailto:ustbbingmang@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/open0slo" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;open0slo" rel="noopener me" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="RSS → &#x2F;atom.xml" rel="noopener me"><i class="fa fa-rss fa-fw"></i>RSS</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://bingmang.github.io/posts/thailand-phuket-diving-liveaboard/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/red-maple-leaf.png">
+      <meta itemprop="name" content="Finn Gao">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mingfei's Blog">
+      <meta itemprop="description" content="Live in the moment. AOW / SRE / Observability / AI Agents 🧘‍♂️🏃‍♂️🎮🤿">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | Mingfei's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/posts/thailand-phuket-diving-liveaboard/" class="post-title-link" itemprop="url">二刷泰国 —— 普吉岛，潜水，船宿</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2024-06-08 16:26:42" itemprop="dateCreated datePublished" datetime="2024-06-08T16:26:42+08:00">2024-06-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2025-12-16 19:51:18" itemprop="dateModified" datetime="2025-12-16T19:51:18+08:00">2025-12-16</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>今年的五一假期，在普吉岛上度过了美好的 11 天，我好喜欢阳光，大海！</p>
+<h2 id="启程"><a href="#启程" class="headerlink" title="启程"></a>启程</h2><p>春节从泰国回来后，几乎是第二天就开始看下一个行程了，都说斯米兰船宿新手友好，不需要什么经验，于是就马上敲定了五一的行程。</p>
+<p>这次其实不是一个人出去的，有位女同事说她有 OW，刚好斯米兰在普吉岛，她也很久没出去玩了，于是我们就一起买了机票（下文该女同事就简称 buddy 啦）。</p>
+<p>机票 3 月就买好了，然后接下来就是 J 人的日常，接下来的一个多月都在做攻略……</p>
+<p>这次的攻略我和 buddy 都挺满意的，而且她是 P 人，我是 J 人，刚好一个做计划，一个去哪儿都行，还是蛮搭的！</p>
+<p><img src="https://cdn.hashnode.com/res/hashnode/image/upload/v1716091899847/727fef25-c5bc-490d-bd79-e6447b87df50.jpeg"></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/thailand-phuket-diving-liveaboard/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://bingmang.github.io/posts/thailand-koh-tao-diving/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/red-maple-leaf.png">
+      <meta itemprop="name" content="Finn Gao">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mingfei's Blog">
+      <meta itemprop="description" content="Live in the moment. AOW / SRE / Observability / AI Agents 🧘‍♂️🏃‍♂️🎮🤿">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | Mingfei's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/posts/thailand-koh-tao-diving/" class="post-title-link" itemprop="url">开启一个人的旅行 —— 泰国，涛岛，潜水</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2024-02-10 16:26:42" itemprop="dateCreated datePublished" datetime="2024-02-10T16:26:42+08:00">2024-02-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2025-12-16 19:51:18" itemprop="dateModified" datetime="2025-12-16T19:51:18+08:00">2025-12-16</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <div style="max-width: 550px; margin: 20px auto; overflow: visible; min-height: 400px;">
+<iframe
+  src="https://platform.twitter.com/embed/Tweet.html?id=1756191199151714321"
+  width="100%"
+  height="800"
+  frameborder="0"
+  scrolling="no"
+  allowtransparency="true"
+  style="border: none; min-width: 220px; display: block; overflow: visible; min-height: 400px;">
+</iframe>
+</div>
+
+<p>2024 年 2 月 10 日，我开始了人生第一场一个人的旅行冒险。</p>
+<h2 id="启程"><a href="#启程" class="headerlink" title="启程"></a>启程</h2><p><img src="https://cdn.hashnode.com/res/hashnode/image/upload/v1708836226758/39612e07-d4b5-4eb5-91b4-cc78fa8e8e40.jpeg"></p>
+<p>这次旅行的时间是 2024 年 2 月 10 日 到 2024 年 2 月 18 日，也就是春节的初一到初九。因为去年 10 月份国庆的时候回过一次家了，而且其实家里的气氛让我有点喘不过气来，所以今年春节就选择了出去旅行。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/thailand-koh-tao-diving/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://bingmang.github.io/posts/muscle-gain-two-months-experience/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/red-maple-leaf.png">
+      <meta itemprop="name" content="Finn Gao">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mingfei's Blog">
+      <meta itemprop="description" content="Live in the moment. AOW / SRE / Observability / AI Agents 🧘‍♂️🏃‍♂️🎮🤿">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | Mingfei's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/posts/muscle-gain-two-months-experience/" class="post-title-link" itemprop="url">关于我氪金增肌两个月的心得</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2023-10-13 16:26:42" itemprop="dateCreated datePublished" datetime="2023-10-13T16:26:42+08:00">2023-10-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2025-12-16 19:51:18" itemprop="dateModified" datetime="2025-12-16T19:51:18+08:00">2025-12-16</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>这是我在 Hashnode 上写的第一篇博客，一直思来想去写些什么比较好，正好最近这两个月的主要精力都放在了增肌上，于是决定简单分享一下。</p>
+<p>先说最后的成果，两个月的私教课，从 49kg 长到了 57kg。</p>
+<h2 id="个人情况"><a href="#个人情况" class="headerlink" title="个人情况"></a>个人情况</h2><p>先说下个人情况吧，26, 178, 49, 0, 喜熊（不是</p>
+<p>职业是程序员，从小就宅，体重从来没上过 50kg，大学的时候断断续续为了增肌练过两三年，但体重基本没变化，因为从小就被人说很瘦，所以有身体臆想症</p>
+<blockquote>
+<p>「身體臆形症」（Body Dysmorphic Disorder，BDD），是一種無法停止思考自己外貌上的缺陷或瑕疵的精神狀態。</p>
+</blockquote>
+<p>刚毕业的这两年，正是我的迷惘期，一直不知道该干点什么，增重这件事本来都已经放弃了，但奈何 ins 上的肌肉男真的太多了，刷多了心里痒痒，于是心里想成为肌肉男的想法又死灰复燃，决定最后一试。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/muscle-gain-two-months-experience/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://bingmang.github.io/posts/vector-guide/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/red-maple-leaf.png">
+      <meta itemprop="name" content="Finn Gao">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mingfei's Blog">
+      <meta itemprop="description" content="Live in the moment. AOW / SRE / Observability / AI Agents 🧘‍♂️🏃‍♂️🎮🤿">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | Mingfei's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/posts/vector-guide/" class="post-title-link" itemprop="url">使用 Vector 快速搭建日志采集系统</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2022-06-26 12:58:01" itemprop="dateCreated datePublished" datetime="2022-06-26T12:58:01+08:00">2022-06-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2025-12-16 19:51:18" itemprop="dateModified" datetime="2025-12-16T19:51:18+08:00">2025-12-16</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>注：本博客所有文章禁止转载，将追究法律责任。</strong></p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在分布式系统中，可观测性（Observability）是十分重要的组成之一，如果没有可观测性系统，在排查问题时通常只能 SSH 到每一台机器上去查看分散的日志，排查问题的效率将变的非常低。</p>
+<p>而可观测性系统通常由三部分组成：Logs、Metrics、Tracing：</p>
+<ul>
+<li>Logs：日志采集监测系统，常见的技术栈为 ELK 全家桶（Elasticsearch、Logstash、Kibana）；</li>
+<li>Metrics：常见的技术栈为 Prometheus，数据量大的时候会加上时序数据库；</li>
+<li>Tracing：常见的技术是在日志中打点 trace_id，或使用 eBPF 技术。</li>
+</ul>
+<p>本文主要将精力放在 Logs，也就是日志采集监测系统搭建这里。</p>
+<p><img src="https://vector.dev/img/going-to-prod/separating-concerns.png" alt="vector"></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/vector-guide/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://bingmang.github.io/posts/the-crows-guide-to-psychology/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/red-maple-leaf.png">
+      <meta itemprop="name" content="Finn Gao">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mingfei's Blog">
+      <meta itemprop="description" content="Live in the moment. AOW / SRE / Observability / AI Agents 🧘‍♂️🏃‍♂️🎮🤿">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | Mingfei's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/posts/the-crows-guide-to-psychology/" class="post-title-link" itemprop="url">《蛤蟆先生去看心理医生》笔记</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2022-04-16 17:23:14" itemprop="dateCreated datePublished" datetime="2022-04-16T17:23:14+08:00">2022-04-16</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2025-12-16 19:51:18" itemprop="dateModified" datetime="2025-12-16T19:51:18+08:00">2025-12-16</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="读后感"><a href="#读后感" class="headerlink" title="读后感"></a>读后感</h2><p>这本书是前任安利给我的，他说他看了这本书后对自己有了新的认识，生活的态度也发生了很大的转变，于是我也想来读一读。</p>
+<p>书中说到，一个人的想法和行为会处于下列三种状态之一：儿童自我状态、成人自我状态、父母自我状态。而这本书很大篇幅都在讨论儿童自我状态，这也是大部分“无法控制情绪”的人处在的一个状态。</p>
+<blockquote>
+<p>“人们进入儿童状态后，他们的感受和行为都和小时候的自己如出一辙，与实际年龄并没有关系。”<br>“只有在成人自我状态里，才能学到关于自我的新知识。”<br>“当你处在父母状态时，基本上你不是在挑剔就是在教育别人。”  </p>
+</blockquote>
+<p>这本书有很大一部分都在讨论原生家庭对一个人的想法、行为的影响，当你认真回想幼年时期发生的事情，那些你可能觉得没什么大不了的事情反而是造就你现在性格的关键。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/the-crows-guide-to-psychology/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://bingmang.github.io/posts/2021-summary/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/red-maple-leaf.png">
+      <meta itemprop="name" content="Finn Gao">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mingfei's Blog">
+      <meta itemprop="description" content="Live in the moment. AOW / SRE / Observability / AI Agents 🧘‍♂️🏃‍♂️🎮🤿">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | Mingfei's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/posts/2021-summary/" class="post-title-link" itemprop="url">2021 年度总结</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2022-01-04 16:26:42" itemprop="dateCreated datePublished" datetime="2022-01-04T16:26:42+08:00">2022-01-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2025-12-16 19:51:18" itemprop="dateModified" datetime="2025-12-16T19:51:18+08:00">2025-12-16</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="时间点"><a href="#时间点" class="headerlink" title="时间点"></a>时间点</h2><p>先来说几个今年的时间点：</p>
+<ul>
+<li>1月18日 寒假回家</li>
+<li>3月16日 被实验室派去福州出差</li>
+<li>5月25日 回京</li>
+<li>7月5日 面试 SmartX</li>
+<li>7月19日 入职 SmartX 实习生</li>
+<li>10月11日 SmartX Offer</li>
+</ul>
+<h2 id="今年看了哪些书"><a href="#今年看了哪些书" class="headerlink" title="今年看了哪些书"></a>今年看了哪些书</h2><p>今年看的书不多，也几乎没有看村上春树的小说，只记得重启了好多次《1Q84》但还是没能坚持看下去，可能是因为自己看不懂那层隐喻，且剧情又不够科幻导致的。科幻小说尝试过《星之继承者》和《银河帝国》，也没有坚持看下去。觉得自己真是缺乏坚持的能力。以下是今年尝试看过的书（或网课）：</p>
+<p>小说类：</p>
+<ul>
+<li>1Q84</li>
+<li>星之继承者</li>
+<li>银河帝国</li>
+<li>动物庄园</li>
+<li>直到世界尽头</li>
+<li>败者为王</li>
+</ul>
+<p>技术类：</p>
+<ul>
+<li>MIT 6.824</li>
+<li>Redis 设计与实现</li>
+<li>高性能 MySQL</li>
+<li>正则表达式必知必会</li>
+<li>SQL 必知必会</li>
+<li>深入浅出 Prometheus</li>
+<li>Kubernetes in Action</li>
+<li>极客时间：Linux 性能优化实战</li>
+<li>深度实践 KVM</li>
+<li>SRE：Google 运维解密</li>
+<li>深入剖析 Kubernetes</li>
+<li>DDIA</li>
+<li>博客：网络基本功系列</li>
+<li>100 Go Mistakes</li>
+</ul>
+<p>工具类：</p>
+<ul>
+<li>零挫败感人生</li>
+<li>富爸爸穷爸爸</li>
+<li>亲密关系</li>
+<li>现代西班牙语</li>
+<li>睡眠革命</li>
+<li>刻意练习</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/2021-summary/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://bingmang.github.io/posts/vm-io-slow-cause-emergency-mode/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/red-maple-leaf.png">
+      <meta itemprop="name" content="Finn Gao">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mingfei's Blog">
+      <meta itemprop="description" content="Live in the moment. AOW / SRE / Observability / AI Agents 🧘‍♂️🏃‍♂️🎮🤿">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | Mingfei's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/posts/vm-io-slow-cause-emergency-mode/" class="post-title-link" itemprop="url">虚拟机 IO 慢速导致挂载超时进入 emergency mode 问题排查</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-08-15 15:45:16" itemprop="dateCreated datePublished" datetime="2021-08-15T15:45:16+08:00">2021-08-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2025-12-16 19:51:18" itemprop="dateModified" datetime="2025-12-16T19:51:18+08:00">2025-12-16</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h1><p>最近遇到一个问题， 在虚拟机部署的集群上，再套娃一个虚拟机，导致 fstab 中挂载 xfs 设备超时，原因是 boot 分区被 udev 扫描时 IO 太慢导致超时，所以每次开机都会进入 emergency mode, 需要按下 Ctrl + D 才能继续。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/vm-io-slow-cause-emergency-mode/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Finn Gao</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/disqusjs@3.1.0/dist/browser/styles/disqusjs.css" integrity="sha256-E4RzceSomICFY1PT/yDQrN8DsLSwdScDEiQAevHabp0=" crossorigin="anonymous">
+
+<script class="next-config" data-name="disqusjs" type="application/json">{"enable":true,"api":null,"apikey":"4BbobWwa0gpnTOjZKVCYqE7VVRAvHfEgEUVPFgUkmBI9siaKnhl5UU0trxpNWMZG","shortname":"Finn","js":{"url":"https://cdn.jsdelivr.net/npm/disqusjs@3.1.0/dist/browser/disqusjs.es2015.umd.min.js","integrity":"sha256-gdbBT62HLzqWTnXQED3WQL/ItFCuWsA5gd6dM/wgdiE="}}</script>
+<script src="/js/third-party/comments/disqusjs.js" defer></script>
+
+</body>
+</html>
